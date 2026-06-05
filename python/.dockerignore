@@ -1,0 +1,15 @@
+Dockerfile
+.dockerignore
+.deploymill/
+.git/
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+.env
+.DS_Store
+dist
+build
+*.egg-info
