@@ -5,6 +5,7 @@
     { "dir": "node" },
     { "dir": "python" },
     { "dir": "worker-node" },
-    { "dir": "worker-python" }
+    { "dir": "worker-python" },
+    { "dir": "mcp-node" }
   ]
 }
