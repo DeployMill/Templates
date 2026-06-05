@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stack": "node",
+  "stack": "mcp-node",
   "workload": "web",
   "title": "MCP Server (Node.js)",
   "description": "Model Context Protocol server — expose tools and resources to AI agents over HTTP.",
