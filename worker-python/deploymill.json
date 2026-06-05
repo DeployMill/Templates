@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "stack": "python",
+  "workload": "worker",
+  "title": "Python worker",
+  "description": "Python long-running background worker (no HTTP port, no domain).",
+  "port": null,
+  "buildType": "dockerfile"
+}

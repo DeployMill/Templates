@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "stack": "python",
+  "workload": "web",
+  "title": "Python",
+  "description": "FastAPI (Python) HTTP server.",
+  "port": 8000,
+  "buildType": "dockerfile"
+}

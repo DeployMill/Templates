@@ -1,0 +1,7 @@
+[project]
+name = "{{PROJECT_NAME}}"
+version = "0.1.0"
+requires-python = ">=3.12"
+# Stdlib-only to start. Add your worker's libraries here, then update the
+# Dockerfile to install them (see the web python template's uv-based build).
+dependencies = []

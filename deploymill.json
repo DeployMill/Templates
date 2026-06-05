@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "templates": [
+    { "dir": "static" },
+    { "dir": "node" },
+    { "dir": "python" },
+    { "dir": "worker-node" },
+    { "dir": "worker-python" }
+  ]
+}

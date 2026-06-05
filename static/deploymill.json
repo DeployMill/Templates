@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "stack": "static",
+  "workload": "web",
+  "title": "Static site",
+  "description": "HTML/CSS/JS served by nginx. No runtime — just static assets.",
+  "port": 80,
+  "buildType": "dockerfile"
+}

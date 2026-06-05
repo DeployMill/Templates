@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "stack": "node",
+  "workload": "worker",
+  "title": "Node.js worker",
+  "description": "Node 22 long-running background worker (no HTTP port, no domain).",
+  "port": null,
+  "buildType": "dockerfile"
+}
