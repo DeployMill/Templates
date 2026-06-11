@@ -19,5 +19,6 @@ COPY --from=build /app/node_modules ./node_modules
 COPY package.json ./package.json
 COPY src ./src
 COPY public ./public
+USER node
 EXPOSE 3000
 CMD ["node", "src/index.js"]

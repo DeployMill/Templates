@@ -18,5 +18,6 @@ COPY --from=build /app/node_modules ./node_modules
 # deploy no-op. Copying from the context keys the layer on the source content.
 COPY package.json ./package.json
 COPY src ./src
+USER node
 EXPOSE 3000
 CMD ["node", "src/index.js"]
