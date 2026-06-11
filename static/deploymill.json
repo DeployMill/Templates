@@ -4,6 +4,6 @@
   "workload": "web",
   "title": "Static site",
   "description": "HTML/CSS/JS served by nginx. No runtime — just static assets.",
-  "port": 80,
+  "port": 8080,
   "buildType": "dockerfile"
 }
