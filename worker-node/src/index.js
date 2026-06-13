@@ -1,5 +1,8 @@
 // {{PROJECT_NAME}} — a deploymill *worker*.
 //
+// THE entrypoint: the Dockerfile runs `node src/index.js`. Edit this file (or
+// import into it) to do real work; see AGENTS.md for the build/run contract.
+//
 // A long-running background process with no HTTP server and no port. deploymill
 // keeps it running (it holds an active-app slot for as long as it's up). There's
 // no domain and nothing to curl — its output is its stdout logs.

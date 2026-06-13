@@ -1,3 +1,7 @@
+// This file is THE entrypoint — the Dockerfile runs `node src/index.js`. To
+// change what the app does, edit (or import into) this file; a new file
+// elsewhere won't run unless the Dockerfile's COPY/CMD point at it.
+// See AGENTS.md for the full build/run/layout contract.
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 

@@ -1,5 +1,8 @@
 // {{PROJECT_NAME}} — a deploymill MCP server.
 //
+// THE entrypoint: the Dockerfile runs `node src/index.js`. Edit this file (or
+// import into it) to change the server; see AGENTS.md for the build/run contract.
+//
 // Exposes tools (and optionally resources/prompts) to AI agents via the
 // Model Context Protocol over HTTP. Clients connect to the /mcp endpoint
 // using the Streamable HTTP transport (the current MCP standard).

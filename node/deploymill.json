@@ -3,7 +3,7 @@
   "stack": "node",
   "workload": "web",
   "title": "Node.js",
-  "description": "Node 22 minimal HTTP server (Hono).",
+  "description": "Node 24 minimal HTTP server (Hono).",
   "port": 3000,
   "buildType": "dockerfile"
 }

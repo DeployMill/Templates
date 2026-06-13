@@ -1,0 +1,80 @@
+# {{PROJECT_NAME}} — how this template builds and runs
+
+> **Agent: read this before adding or moving files.** The `Dockerfile` — not
+> convention — decides what ships and what runs. Put code where the Dockerfile
+> copies it, or change the Dockerfile to match. Most "my changes didn't deploy"
+> problems are a file that never entered the image, or an entrypoint that was
+> never updated.
+
+**Stack:** Node 24 (Hono) · **Workload:** web · **Port:** 3000
+
+## What actually runs
+
+The container runs exactly this (from the `Dockerfile`):
+
+```
+CMD ["node", "src/index.js"]
+```
+
+`src/index.js` is **THE entrypoint**. If your code doesn't run through it, it
+doesn't run. To change what the app does, edit `src/index.js` (or import your new
+modules into it) — **do not** add a parallel entrypoint (`server.js`, `app.js`,
+`index.ts`) and expect it to start; nothing calls it unless you also change `CMD`.
+
+## What ships into the image
+
+Only these paths are copied into the runtime image:
+
+| What | Path | Notes |
+|------|------|-------|
+| dependencies | `node_modules` | resolved from `package.json` at build (not committed) |
+| manifest | `package.json` | declares deps + `"type": "module"` |
+| your code | `src/` | everything here ships |
+| static assets | `public/` | shipped, but you must serve it (see recipes) |
+
+**Anything outside `src/` and `public/` is NOT in the image.** If you add a
+top-level file or directory the app needs at runtime, add a matching `COPY` line
+to the Dockerfile or it won't be there.
+
+## File map
+
+```
+{{PROJECT_NAME}}/
+├── Dockerfile          # build + run contract — edit if you move files or change the port
+├── package.json        # dependencies go here
+├── src/
+│   └── index.js        # ← ENTRYPOINT (CMD runs this). The app starts here.
+├── public/             # static files (copied into the image; serve via serveStatic)
+├── AGENTS.md           # this file
+└── .deploymill/
+    └── project.json    # deploymill app config (created by the platform); port lives here too
+```
+
+## Recipes
+
+- **Change app behavior** → edit `src/index.js`, or add modules under `src/` and
+  `import` them from `index.js`.
+- **Add a dependency** → add it to `dependencies` in `package.json`. The build
+  runs `pnpm install`, so the next deploy picks it up. (No lockfile is committed;
+  add a `pnpm-lock.yaml` for reproducible installs — the Dockerfile already globs
+  it.)
+- **Serve files from `public/`** → wire it in `index.js`:
+  ```js
+  import { serveStatic } from "@hono/node-server/serve-static";
+  app.use("/*", serveStatic({ root: "./public" }));
+  ```
+- **Change the port** → it's pinned in THREE places that must stay in sync:
+  `EXPOSE` in the Dockerfile, `port` in `.deploymill/project.json`, and the
+  `process.env.PORT || 3000` fallback in `index.js`. The platform sets `PORT` at
+  runtime — always read it; never hardcode.
+- **Health check** → `GET /healthz` must return `200`. deploymill probes it after
+  every deploy and auto-rolls-back on a non-200. Put real readiness checks there.
+
+## Gotchas
+
+- Runs as the non-root `node` user. The filesystem is effectively read-only and
+  Linux capabilities are dropped — for persistence use a mounted volume, not the
+  image filesystem.
+- The Dockerfile copies `src/` from the build **context** (not `--from=build`) on
+  purpose: copying from the build stage can make BuildKit emit a byte-identical
+  image and silently no-op a real edit. Keep it that way.

@@ -12,8 +12,9 @@ an organization to supply their own starters.
 
 Moving them here makes them **data, not code**: they improve on their own cadence,
 they're reviewable in isolation, and they establish the exact format an org will
-later use to bring their own templates. The server still vendors a copy as an
-offline fallback, but this repo is the source of truth.
+later use to bring their own templates. The server keeps a durable on-disk
+"last-good" cache of the last successful fetch as its offline fallback (it no
+longer vendors a build-time copy), but this repo is the source of truth.
 
 ## Why fetched at runtime (unified path)
 
@@ -23,9 +24,10 @@ is deliberate so that the **same code path** serves both the official templates
 manifest format, one cache — official is just the default source. A build-time
 vendor would have forced two divergent code paths.
 
-To keep this safe, the server keeps a vendored copy of these templates and falls
-back to it on any fetch/parse failure. The fallback is seeded identical to this
-repo, so "repo unreachable" degrades to "slightly stale," never "broken."
+To keep this safe, every successful fetch is persisted to a durable on-disk
+"last-good" cache, and the server falls back to it on any fetch/parse failure.
+Because the cache is the last copy actually fetched from this repo, "repo
+unreachable" degrades to "slightly stale," never "broken."
 
 ## Why this repo is public and under its own org
 
@@ -55,12 +57,32 @@ The agent-facing catalog presents one entry per runtime (`node`, `python`,
 field is what ties `node/` and `worker-node/` together into a single `node`
 catalog entry. A stack must have a `web` variant to appear; `static` is web-only.
 
+## Why each template ships an `AGENTS.md`
+
+A scaffolded repo used to contain only code + a Dockerfile, so an agent building
+on top had to reverse-engineer the build/run contract from the Dockerfile — and
+often got it wrong: it added files outside the paths the Dockerfile `COPY`s, or
+left the entrypoint pointing at the starter, and the deploy kept serving the
+hello-world. The recurring symptom was "my new version didn't deploy."
+
+So every template carries an `AGENTS.md` that states the contract explicitly:
+which file is the entrypoint `CMD` runs, exactly what gets copied into the image
+(and what therefore won't ship), where code vs. assets go, and how to add deps /
+change the port. The renderer copies every file under a template dir (only the
+`deploymill.json` manifest is excluded) with `{{PROJECT_NAME}}` substituted, so
+`AGENTS.md` lands in the new repo for free — no server change, ships on the same
+runtime-fetch cadence as the rest of the template. The entrypoint files also
+carry a one-line pointer back to `AGENTS.md` at the exact spot an agent edits.
+
+`AGENTS.md` is documentation for the *scaffolded app*, distinct from this repo's
+own `README.md`/`DECISIONS.md` (which document the templates repo itself).
+
 ## `schemaVersion` must stay additive
 
 The server validates manifests against `schemaVersion: 1`. A server that sees a
 higher `schemaVersion` it doesn't understand will reject the manifest and fall
-back to its vendored copy — a safe failure (keeps shipping working, if older,
-templates). Therefore: prefer **additive, optional** fields within v1; only bump
+back to its on-disk last-good cache — a safe failure (keeps shipping working, if
+older, templates). Therefore: prefer **additive, optional** fields within v1; only bump
 `schemaVersion` for a genuinely breaking change, knowing older servers will fall
 back until they're updated.
 

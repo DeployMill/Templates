@@ -3,6 +3,7 @@ Dockerfile
 .deploymill/
 .git/
 .gitignore
+AGENTS.md
 __pycache__
 *.pyc
 *.pyo

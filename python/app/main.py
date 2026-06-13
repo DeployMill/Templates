@@ -1,3 +1,8 @@
+# This file is THE entrypoint — the Dockerfile runs `uvicorn app.main:app`, i.e.
+# it serves the module-level `app` object below. To change what the app does,
+# edit (or import into) this file and keep an `app` ASGI object; a new file
+# elsewhere won't run unless the Dockerfile's COPY/CMD point at it.
+# See AGENTS.md for the full build/run/layout contract.
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
