@@ -70,6 +70,39 @@ to the Dockerfile or it won't be there.
 - **Health check** → `GET /healthz` must return `200`. deploymill probes it after
   every deploy and auto-rolls-back on a non-200. Put real readiness checks there.
 
+## Adding a database or a volume
+
+You don't choose these at scaffold time — add them when you need them. The
+platform provisions the resource and **injects the connection as an env var**;
+you never hardcode or handle credentials.
+
+- **Database** (`postgres` · `neon` · `supabase` · `sqlite`) → add to
+  `.deploymill/project.json`, then `reconcile_project` (provisions it) and
+  `deploy`:
+  ```json
+  "database": { "provider": "sqlite" }
+  ```
+  The app reads the connection from **`process.env.DATABASE_URL`** — identical
+  for every provider, so you can swap providers later with no code change.
+  `sqlite` auto-provisions its own volume (no `mounts` entry needed). The only
+  part that touches your code — the client library (`pg`), the connection-pool
+  pattern, migrations, and a `/db` health probe — is in
+  **`deploymill://guides/database/node`**. (Switching providers later:
+  **`deploymill://guides/database/migrate-providers`**.)
+- **Object storage** (S3-compatible bucket) → add `storage` to `project.json`,
+  reconcile, deploy. The `S3_*` env vars are injected; wiring (`@aws-sdk/client-s3`)
+  is in **`deploymill://guides/storage/node`**.
+- **Persistent volume** (cache, on-disk index, embedded store) → add a `mounts`
+  entry, reconcile, deploy — it's attached at `mountPath`:
+  ```json
+  "mounts": [{ "volumeName": "data", "mountPath": "/data", "sizeGb": 10 }]
+  ```
+  Volumes are grow-only (raise `sizeGb` to expand; never lowered). See
+  **`deploymill://guides/storage`**.
+
+> Don't add a DB/storage client library "just in case" — add it only after the
+> resource is provisioned and the env var exists, following the guide.
+
 ## Gotchas
 
 - Runs as the non-root `node` user. The filesystem is effectively read-only and

@@ -57,6 +57,29 @@ something else at runtime.
 - **Handle shutdown** → the template already traps `SIGTERM` and exits cleanly;
   do your cleanup there (drain in-flight work, close connections) before exit.
 
+## Adding a database or a volume
+
+Add these when the worker needs to persist or read state. The platform
+provisions the resource and **injects the connection as an env var** — you never
+hardcode credentials.
+
+- **Database** (`postgres` · `neon` · `supabase` · `sqlite`) → add to
+  `.deploymill/project.json`, then `reconcile_project` and `deploy`:
+  ```json
+  "database": { "provider": "sqlite" }
+  ```
+  The worker reads **`process.env.DATABASE_URL`** — identical across providers.
+  `sqlite` auto-provisions its own volume. The client (`pg`), pooling, and
+  migration pattern are in **`deploymill://guides/database/node`** — but note
+  that guide is written for a *web* app: its `/db` health route and
+  health-gated deploy don't apply to a worker (no HTTP edge), so skip those and
+  keep the library/pool/migration parts.
+- **Persistent volume** → add a `mounts` entry, reconcile, deploy:
+  ```json
+  "mounts": [{ "volumeName": "data", "mountPath": "/data", "sizeGb": 10 }]
+  ```
+  Grow-only. See **`deploymill://guides/storage`**.
+
 ## Gotchas
 
 - Runs as the non-root `node` user with Linux capabilities dropped — use a

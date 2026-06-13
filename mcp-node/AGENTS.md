@@ -59,6 +59,32 @@ something else at runtime.
 - **Health check** → `GET /healthz` must return `200`; deploymill probes it and
   auto-rolls-back on non-200.
 
+## Adding a database or a volume
+
+Add these when your tools need to persist state — not at scaffold time. The
+platform provisions the resource and **injects the connection as an env var**;
+you never hardcode credentials.
+
+- **Database** (`postgres` · `neon` · `supabase` · `sqlite`) → add to
+  `.deploymill/project.json`, then `reconcile_project` and `deploy`:
+  ```json
+  "database": { "provider": "sqlite" }
+  ```
+  The app reads **`process.env.DATABASE_URL`** — identical across providers, so
+  you can swap later with no code change. `sqlite` auto-provisions its own
+  volume. The client library (`pg`), pooling, and migration pattern are in
+  **`deploymill://guides/database/node`** (this is a Node stack).
+- **Object storage** → add `storage` to `project.json`, reconcile, deploy; the
+  `S3_*` env vars are injected. Wiring: **`deploymill://guides/storage/node`**.
+- **Persistent volume** → add a `mounts` entry, reconcile, deploy:
+  ```json
+  "mounts": [{ "volumeName": "data", "mountPath": "/data", "sizeGb": 10 }]
+  ```
+  Grow-only. See **`deploymill://guides/storage`**.
+
+> Don't add a client library "just in case" — add it after the resource is
+> provisioned and the env var exists, per the guide.
+
 ## Gotchas
 
 - Runs as the non-root `node` user; filesystem is effectively read-only and caps

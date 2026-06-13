@@ -53,6 +53,10 @@ So **every file at the repo root is served as-is.** `index.html` is served at
 
 ## Gotchas
 
+- **No runtime → no database, object storage, or persistent volume.** nginx only
+  serves files; there's no process to read an injected `DATABASE_URL` or write to
+  a mount. If you need any of those, switch to the `node` or `python` **web**
+  template (its `AGENTS.md` has an "Adding a database or a volume" section).
 - **This template does NOT build anything.** If your project needs a build step
   (Vite, a React/Svelte bundle, Tailwind), this static template won't run it —
   either commit the already-built output at the repo root, or add a multi-stage
