@@ -9,5 +9,8 @@
   },
   "scripts": {
     "start": "node src/index.js"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3"]
   }
 }

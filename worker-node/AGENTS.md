@@ -54,6 +54,13 @@ something else at runtime.
   queue, run a sweep, consume a stream). Keep the keep-alive timer/loop.
 - **Add a dependency** → add it to `dependencies` in `package.json`; the next
   deploy runs `pnpm install`. (This starter has none.)
+- **Native (C/C++) addon dep** (`better-sqlite3`, `bcrypt`, `sharp`, …) → pnpm
+  **skips dependency build scripts by default**, so an unguarded install goes green
+  and then crash-loops at runtime with `Could not locate the bindings file`. Add the
+  package to `pnpm.onlyBuiltDependencies` in `package.json` (`better-sqlite3` is
+  already there). The build stage installs `python3 make g++` for packages that must
+  compile from source. Prefer the built-in `node:sqlite` (no addon) when SQLite is all
+  you need.
 - **Handle shutdown** → the template already traps `SIGTERM` and exits cleanly;
   do your cleanup there (drain in-flight work, close connections) before exit.
 

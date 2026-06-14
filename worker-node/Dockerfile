@@ -6,6 +6,10 @@ RUN corepack enable
 
 # Build stage exists only to resolve node_modules from the manifest + lockfile.
 FROM base AS build
+# Toolchain for native (C/C++) addon deps (better-sqlite3, bcrypt, sharp, …).
+# Build stage only — the runtime stage copies the compiled node_modules, so the
+# final image stays toolchain-free.
+RUN apk add --no-cache python3 make g++
 COPY package.json pnpm-lock.yaml* ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod=false
 
