@@ -58,6 +58,13 @@ to the Dockerfile or it won't be there.
   runs `pnpm install`, so the next deploy picks it up. (No lockfile is committed;
   add a `pnpm-lock.yaml` for reproducible installs — the Dockerfile already globs
   it.)
+- **Native (C/C++) addon dep** (`better-sqlite3`, `bcrypt`, `sharp`, …) → pnpm
+  **skips dependency build scripts by default**, so an unguarded install goes green
+  and then crash-loops at runtime with `Could not locate the bindings file`. Add the
+  package to `pnpm.onlyBuiltDependencies` in `package.json` (`better-sqlite3` is
+  already there). The build stage installs `python3 make g++` for packages that must
+  compile from source. Prefer the built-in `node:sqlite` (no addon) when SQLite is all
+  you need.
 - **Serve files from `public/`** → wire it in `index.js`:
   ```js
   import { serveStatic } from "@hono/node-server/serve-static";

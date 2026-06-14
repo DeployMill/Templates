@@ -50,6 +50,13 @@ something else at runtime.
   call inside `buildMcpServer()` in `src/index.js`. That's how an agent calls it.
 - **Add a dependency** → add it to `dependencies` in `package.json`; the next
   deploy runs `pnpm install`.
+- **Native (C/C++) addon dep** (`better-sqlite3`, `bcrypt`, `sharp`, …) → pnpm
+  **skips dependency build scripts by default**, so an unguarded install goes green
+  and then crash-loops at runtime with `Could not locate the bindings file`. Add the
+  package to `pnpm.onlyBuiltDependencies` in `package.json` (`better-sqlite3` is
+  already there). The build stage installs `python3 make g++` for packages that must
+  compile from source. Prefer the built-in `node:sqlite` (no addon) when SQLite is all
+  you need.
 - **Connect a client** → point it at `https://<your-domain>/mcp` (Streamable
   HTTP transport). The template runs **stateless** (one transport per request);
   for sessions, set a real `sessionIdGenerator` and keep a server-side map.
