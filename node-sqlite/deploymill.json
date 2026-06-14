@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "stack": "node-sqlite",
+  "workload": "web",
+  "title": "Node.js + SQLite",
+  "description": "Node 24 HTTP server (Hono) with persistent SQLite via the built-in node:sqlite (no native addon). Wires the injected file: DATABASE_URL onto the auto-provisioned volume.",
+  "port": 3000,
+  "buildType": "dockerfile"
+}

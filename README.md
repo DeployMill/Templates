@@ -24,6 +24,7 @@ never updated. **Read `AGENTS.md` in the scaffolded repo before restructuring it
 |------------------|----------|----------|------|-------------------------------------------|
 | `static/`        | static   | web      | 8080 | HTML/CSS/JS served by nginx               |
 | `node/`          | node     | web      | 3000 | Node 24 minimal HTTP server (Hono)        |
+| `node-sqlite/`   | node-sqlite | web   | 3000 | Node 24 (Hono) + persistent SQLite (`node:sqlite`) |
 | `python/`        | python   | web      | 8000 | FastAPI HTTP server                       |
 | `mcp-node/`      | mcp-node | web      | 3000 | MCP server (Node.js) over Streamable HTTP |
 | `worker-node/`   | node     | worker   | —    | Node 24 long-running background worker    |

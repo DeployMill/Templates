@@ -3,6 +3,7 @@
   "templates": [
     { "dir": "static" },
     { "dir": "node" },
+    { "dir": "node-sqlite" },
     { "dir": "python" },
     { "dir": "worker-node" },
     { "dir": "worker-python" },
