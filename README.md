@@ -34,6 +34,13 @@ A **web** template is an HTTP service that gets a port + a domain. A **worker**
 is a headless long-running process (queue consumer, scheduler) with no port and
 no domain.
 
+Every web template (except `static`, which has no server) ships a
+`POST /_system/tick` route alongside `/healthz` — the **scheduled-jobs
+receiver**. Declare `schedules` in your app's `.deploymill/project.json` and
+deploymill delivers each cron tick here; register the matching handler in the
+template's `handlers`/`HANDLERS` map. See deploymill's
+`deploymill://guides/schedules` for the full contract.
+
 ## Manifest format
 
 Each template directory carries its own `deploymill.json` describing it, and the

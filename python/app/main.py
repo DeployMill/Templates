@@ -3,7 +3,10 @@
 # edit (or import into) this file and keep an `app` ASGI object; a new file
 # elsewhere won't run unless the Dockerfile's COPY/CMD point at it.
 # See AGENTS.md for the full build/run/layout contract.
-from fastapi import FastAPI
+import hmac
+import os
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
@@ -38,3 +41,45 @@ def root() -> str:
 @app.get("/healthz")
 def healthz() -> dict:
     return {"ok": True}
+
+
+# --- Scheduled-jobs receiver -------------------------------------------------
+# POST /_system/tick is where deploymill delivers scheduled "ticks". When your
+# app declares schedules in .deploymill/project.json (e.g.
+#   "schedules": [{ "name": "daily-digest", "cron": "0 8 * * *" }]
+# ), deploymill registers the cron and, on a due minute, POSTs this endpoint
+# with `Authorization: Bearer <DM_SCHEDULE_TICK_SECRET>` (an env var deploymill
+# injects automatically) and a JSON body { job, scheduledTime }. Ticks are
+# at-least-once, so handlers MUST be idempotent — "do the work for whoever is
+# DUE", not "fire exactly once".
+# See deploymill's deploymill://guides/schedules for the full contract.
+
+TICK_SECRET = os.environ.get("DM_SCHEDULE_TICK_SECRET", "")
+
+
+def _token_ok(header: str | None) -> bool:
+    if not TICK_SECRET or not header or not header.startswith("Bearer "):
+        return False
+    return hmac.compare_digest(header[7:], TICK_SECRET)
+
+
+# Register scheduled handlers keyed by the schedule `name` from
+# .deploymill/project.json. Handlers MUST be idempotent (a tick can fire more
+# than once). An app with no schedules is never ticked; an unknown job returns
+# 404 — that's the "you declared a schedule but didn't add its handler" signal.
+HANDLERS = {
+    # "daily-digest": daily_digest,
+}
+
+
+@app.post("/_system/tick")
+async def system_tick(request: Request) -> dict:
+    if not _token_ok(request.headers.get("authorization")):
+        raise HTTPException(status_code=401, detail="unauthorized")
+    body = await request.json()
+    job = body.get("job")
+    handler = HANDLERS.get(job)
+    if handler is None:
+        raise HTTPException(status_code=404, detail="unknown_job")
+    await handler()
+    return {"ok": True, "job": job}
