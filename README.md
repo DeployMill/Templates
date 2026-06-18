@@ -29,10 +29,33 @@ never updated. **Read `AGENTS.md` in the scaffolded repo before restructuring it
 | `mcp-node/`      | mcp-node | web      | 3000 | MCP server (Node.js) over Streamable HTTP |
 | `worker-node/`   | node     | worker   | —    | Node 24 long-running background worker    |
 | `worker-python/` | python   | worker   | —    | Python long-running background worker     |
+| `kanban/`        | kanban   | web      | 3000 | Trello-style board (Hono + Postgres)      |
+| `todo/`          | todo     | web      | 3000 | To-do / task list (Hono + Postgres)       |
+| `link-in-bio/`   | link-in-bio | web   | 3000 | Linktree-style links page (Hono + Postgres) |
+| `event-rsvp/`    | event-rsvp | web    | 3000 | Event page + RSVP guest list (Hono + Postgres) |
 
 A **web** template is an HTTP service that gets a port + a domain. A **worker**
 is a headless long-running process (queue consumer, scheduler) with no port and
 no domain.
+
+### Curated free-tier starters (DB-backed, one-click)
+
+`kanban`, `todo`, `link-in-bio`, and `event-rsvp` are the **curated starter
+apps** (DET-603): real, useful apps a free **Explore**-tier user can launch and
+then remix live with their agent. Each declares a managed Postgres database in
+its `deploymill.json` (`"database": { "engine": "postgres", "provider":
+"deploymill" }`), so `start_project` **provisions the database and injects
+`DATABASE_URL` before the first deploy** — the app comes up working in a single
+call, no extra reconcile. They're built to run inside the Explore free floor:
+state only in managed Postgres (no volumes, no object storage, no uploads), no
+outbound calls / third-party keys, subdomain-only. Their `AGENTS.md` documents
+the "make it yours" remix knobs and flags the paid-tier upgrades (custom domain,
+site protection, email) as prompts rather than broken buttons.
+
+> **Manifest `database` field:** any web template can opt into provision-on-start
+> by adding a `database` block to its `deploymill.json` (same two-axis shape as a
+> project.json `database` field). Omit it and the template provisions no database,
+> exactly as before.
 
 Every web template (except `static`, which has no server) ships a
 `POST /_system/tick` route alongside `/healthz` — the **scheduled-jobs

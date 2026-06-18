@@ -1,0 +1,10 @@
+Dockerfile
+.dockerignore
+.deploymill/
+.git/
+.gitignore
+AGENTS.md
+node_modules
+dist
+.env
+.DS_Store

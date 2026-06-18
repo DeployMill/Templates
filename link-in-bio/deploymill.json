@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "stack": "link-in-bio",
+  "workload": "web",
+  "title": "Link in Bio",
+  "description": "A shareable personal links page — avatar, bio, themed link buttons. Postgres-backed.",
+  "port": 3000,
+  "buildType": "dockerfile",
+  "database": { "engine": "postgres", "provider": "deploymill" }
+}

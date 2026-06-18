@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "stack": "kanban",
+  "workload": "web",
+  "title": "Kanban Board",
+  "description": "Trello-style board — columns, cards, labels. Postgres-backed, no setup.",
+  "port": 3000,
+  "buildType": "dockerfile",
+  "database": { "engine": "postgres", "provider": "deploymill" }
+}
