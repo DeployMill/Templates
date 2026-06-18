@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "stack": "event-rsvp",
+  "workload": "web",
+  "title": "Event + RSVP",
+  "description": "A shareable event page with a public RSVP form and a live guest list. Postgres-backed.",
+  "port": 3000,
+  "buildType": "dockerfile",
+  "database": { "engine": "postgres", "provider": "deploymill" }
+}

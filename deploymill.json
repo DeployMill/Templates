@@ -7,6 +7,10 @@
     { "dir": "python" },
     { "dir": "worker-node" },
     { "dir": "worker-python" },
-    { "dir": "mcp-node" }
+    { "dir": "mcp-node" },
+    { "dir": "kanban" },
+    { "dir": "todo" },
+    { "dir": "link-in-bio" },
+    { "dir": "event-rsvp" }
   ]
 }

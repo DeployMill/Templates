@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "stack": "todo",
+  "workload": "web",
+  "title": "To-Do List",
+  "description": "Simple, fast task list — lists, due dates, done state. Postgres-backed.",
+  "port": 3000,
+  "buildType": "dockerfile",
+  "database": { "engine": "postgres", "provider": "deploymill" }
+}
