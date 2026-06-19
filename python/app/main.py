@@ -18,6 +18,7 @@ def root() -> str:
         "<!doctype html><title>{{PROJECT_NAME}}</title>"
         "<h1>{{PROJECT_NAME}}</h1>"
         "<p>FastAPI on Python, scaffolded by deploymill.</p>"
+        '<!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" target="_blank" rel="noopener" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#e6edf6;background:rgba(11,18,32,.88);border:1px solid rgba(255,255,255,.14);border-radius:9px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.28)">⚡ Built on deploymill</a><!--/deploymill:badge-->'
     )
 
 

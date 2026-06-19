@@ -129,6 +129,24 @@ app. Every file in the directory (except its `deploymill.json` manifest) is
 copied verbatim into the scaffolded repo with `{{PROJECT_NAME}}` substituted —
 so `AGENTS.md` and any pointer comments ride along automatically.
 
+### The "Built on deploymill" badge
+
+Every **web** starter renders a small fixed-position *"Built on deploymill"*
+badge linking back to the marketing site (the free-tier attribution / virality
+loop). Wrap it in the marker pair so DeployMill can strip it for paying orgs at
+scaffold time:
+
+```html
+<!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" ...>⚡ Built on deploymill</a><!--/deploymill:badge-->
+```
+
+The content between the markers is **real HTML** — it renders fine with no server
+processing (e.g. a direct clone of this repo), so it's safe in every ordering.
+When an org's `removeBranding` entitlement is true (any paying plan), DeployMill
+removes the marked block (markers + everything between) during `render`, so the
+scaffold ships a clean page. Free scaffolds keep it. Worker / headless templates
+(no human-facing page) don't carry the badge.
+
 ## How DeployMill reads this
 
 DeployMill reads this **public** repo at runtime via the GitHub Git Trees API
