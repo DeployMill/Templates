@@ -111,6 +111,24 @@ commit a database file into the repo (it won't be on the volume anyway).
   **`deploymill://guides/database/node`** for the `pg` wiring, or
   **`deploymill://guides/database/migrate-providers`** to move existing data.
 
+## Secrets & environment variables (API keys, third-party services)
+
+When the app needs config or a credential — an API key, an OAuth secret, a
+feature flag — read it from **`process.env.X`** (never hardcode, never commit a
+key). deploymill injects these two ways:
+
+- **Non-secret config** (public IDs, feature flags, tuning) → `set_env_vars`
+  (with `list_env_vars` / `delete_env_vars` to manage). A redeploy applies it.
+- **Secrets** (API keys, tokens, OAuth client secrets) → the **vault hand-off**,
+  so the value never passes through the agent or the logs: `request_secret`
+  returns a browser link the human pastes the value into, then `bind_secret`
+  exposes it to the app as an env var. Org-scoped, so the same secret is reusable
+  across apps. Full contract (incl. config-as-code via a `secrets` array in
+  `project.json`): **`deploymill://guides/secrets`**.
+
+Calling out to third-party APIs needs **open egress** — available on a paid tier;
+the free Explore floor keeps egress locked.
+
 ## Gotchas
 
 - Runs as the non-root `node` user. The image filesystem is effectively

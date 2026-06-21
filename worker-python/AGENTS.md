@@ -81,6 +81,24 @@ hardcode credentials.
   ```
   Grow-only. See **`deploymill://guides/storage`**.
 
+## Secrets & environment variables (API keys, third-party services)
+
+When the worker needs config or a credential — an API key for the queue/service
+it talks to, an OAuth secret, a feature flag — read it from **`os.environ["X"]`**
+(never hardcode, never commit a key). deploymill injects these two ways:
+
+- **Non-secret config** (public IDs, feature flags, tuning) → `set_env_vars`
+  (with `list_env_vars` / `delete_env_vars` to manage). A redeploy applies it.
+- **Secrets** (API keys, tokens, OAuth client secrets) → the **vault hand-off**,
+  so the value never passes through the agent or the logs: `request_secret`
+  returns a browser link the human pastes the value into, then `bind_secret`
+  exposes it to the worker as an env var. Org-scoped, so the same secret is
+  reusable across apps. Full contract (incl. config-as-code via a `secrets` array
+  in `project.json`): **`deploymill://guides/secrets`**.
+
+Reaching out to third-party services needs **open egress** — available on a paid
+tier; the free Explore floor keeps egress locked.
+
 ## Gotchas
 
 - Runs as the non-root `appuser` with Linux capabilities dropped — use a mounted
