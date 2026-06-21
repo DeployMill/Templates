@@ -92,6 +92,24 @@ you never hardcode credentials.
 > Don't add a client library "just in case" — add it after the resource is
 > provisioned and the env var exists, per the guide.
 
+## Secrets & environment variables (API keys, third-party services)
+
+When a tool needs config or a credential — an upstream API key, an OAuth secret,
+a feature flag — read it from **`process.env.X`** (never hardcode, never commit a
+key). deploymill injects these two ways:
+
+- **Non-secret config** (public IDs, feature flags, tuning) → `set_env_vars`
+  (with `list_env_vars` / `delete_env_vars` to manage). A redeploy applies it.
+- **Secrets** (API keys, tokens, OAuth client secrets) → the **vault hand-off**,
+  so the value never passes through the agent or the logs: `request_secret`
+  returns a browser link the human pastes the value into, then `bind_secret`
+  exposes it to the server as an env var. Org-scoped, so the same secret is
+  reusable across apps. Full contract (incl. config-as-code via a `secrets` array
+  in `project.json`): **`deploymill://guides/secrets`**.
+
+A tool that calls out to a third-party API needs **open egress** — available on a
+paid tier; the free Explore floor keeps egress locked.
+
 ## Gotchas
 
 - Runs as the non-root `node` user; filesystem is effectively read-only and caps

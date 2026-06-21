@@ -12,14 +12,42 @@ from fastapi.responses import HTMLResponse
 app = FastAPI()
 
 
+# Starter landing page. It's one self-contained block so you can replace the
+# whole thing in one edit when you build the real app — keep (or re-add) the
+# badge markers below if this org is on the free tier.
 @app.get("/", response_class=HTMLResponse)
 def root() -> str:
-    return (
-        "<!doctype html><title>{{PROJECT_NAME}}</title>"
-        "<h1>{{PROJECT_NAME}}</h1>"
-        "<p>FastAPI on Python, scaffolded by deploymill.</p>"
-        '<!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" target="_blank" rel="noopener" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#e6edf6;background:rgba(11,18,32,.88);border:1px solid rgba(255,255,255,.14);border-radius:9px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.28)">⚡ Built on deploymill</a><!--/deploymill:badge-->'
-    )
+    return """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{PROJECT_NAME}}</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0b1220;
+      background:radial-gradient(1100px 600px at 50% -10%,#eef2fb,#e5e9f4)}
+    .card{width:100%;max-width:34rem;padding:40px;text-align:center;background:#fff;
+      border:1px solid rgba(11,18,32,.08);border-radius:20px;box-shadow:0 18px 50px rgba(11,18,32,.10)}
+    .spark{font-size:36px;line-height:1}
+    h1{margin:16px 0 8px;font-size:27px;letter-spacing:-.02em}
+    p{margin:0 auto;max-width:27rem;color:#475467}
+    .hint{margin-top:20px;font-size:14px;color:#667085}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;
+      background:#f1f4f9;padding:2px 6px;border-radius:6px;color:#1f2937}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="spark">🚀</div>
+    <h1>{{PROJECT_NAME}}</h1>
+    <p>It's live. This FastAPI starter was scaffolded by deploymill and is ready to become your app.</p>
+    <p class="hint">Edit <code>app/main.py</code> to replace this page — see <code>AGENTS.md</code> for the build &amp; deploy contract.</p>
+  </main>
+  <!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" target="_blank" rel="noopener" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#e6edf6;background:rgba(11,18,32,.88);border:1px solid rgba(255,255,255,.14);border-radius:9px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.28)">⚡ Built on deploymill</a><!--/deploymill:badge-->
+</body>
+</html>"""
 
 
 # Health endpoint — deploymill's canonical "is this deploy good?" signal.

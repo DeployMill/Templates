@@ -22,6 +22,9 @@ const read = db.prepare(`SELECT count FROM visits WHERE id = 1;`);
 
 const app = new Hono();
 
+// Starter landing page with a live persistence demo. It's one self-contained
+// block — replace it wholesale when you build the real app (keep/re-add the
+// badge markers below on the free tier).
 app.get("/", (c) => {
   // A persistent counter: increment on every load. If sqlite is provisioned the
   // number keeps climbing across restarts and redeploys; on the in-memory
@@ -29,15 +32,43 @@ app.get("/", (c) => {
   bump.run();
   const { count } = read.get();
   const mode = persistent
-    ? "persistent (file: DATABASE_URL on a deploymill volume)"
-    : "EPHEMERAL in-memory fallback — provision sqlite to persist";
+    ? "Persisting to a file on a deploymill volume — this number survives restarts and redeploys."
+    : "Ephemeral in-memory fallback — provision sqlite to make this number persist.";
   return c.html(
-    `<!doctype html><title>{{PROJECT_NAME}}</title>
-     <h1>{{PROJECT_NAME}}</h1>
-     <p>Visits: <strong>${count}</strong></p>
-     <p>SQLite storage: ${mode}.</p>
-     <p>node:sqlite on Node 24, scaffolded by deploymill.</p>
-     <!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" target="_blank" rel="noopener" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#e6edf6;background:rgba(11,18,32,.88);border:1px solid rgba(255,255,255,.14);border-radius:9px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.28)">⚡ Built on deploymill</a><!--/deploymill:badge-->`
+    `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{PROJECT_NAME}}</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0b1220;
+      background:radial-gradient(1100px 600px at 50% -10%,#eef2fb,#e5e9f4)}
+    .card{width:100%;max-width:34rem;padding:40px;text-align:center;background:#fff;
+      border:1px solid rgba(11,18,32,.08);border-radius:20px;box-shadow:0 18px 50px rgba(11,18,32,.10)}
+    .spark{font-size:36px;line-height:1}
+    h1{margin:16px 0 4px;font-size:27px;letter-spacing:-.02em}
+    .count{margin:14px 0 6px;font-size:44px;font-weight:700;letter-spacing:-.03em}
+    .count span{font-size:14px;font-weight:500;color:#667085;display:block;letter-spacing:0}
+    p{margin:0 auto;max-width:27rem;color:#475467}
+    .hint{margin-top:20px;font-size:14px;color:#667085}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;
+      background:#f1f4f9;padding:2px 6px;border-radius:6px;color:#1f2937}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="spark">🚀</div>
+    <h1>{{PROJECT_NAME}}</h1>
+    <div class="count">${count}<span>page views</span></div>
+    <p>${mode}</p>
+    <p class="hint">node:sqlite on Node 24. Edit <code>src/index.js</code> to build your app — see <code>AGENTS.md</code>.</p>
+  </main>
+  <!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" target="_blank" rel="noopener" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#e6edf6;background:rgba(11,18,32,.88);border:1px solid rgba(255,255,255,.14);border-radius:9px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.28)">⚡ Built on deploymill</a><!--/deploymill:badge-->
+</body>
+</html>`
   );
 });
 
