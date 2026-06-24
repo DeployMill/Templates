@@ -33,6 +33,7 @@ never updated. **Read `AGENTS.md` in the scaffolded repo before restructuring it
 | `todo/`          | todo     | web      | 3000 | To-do / task list (Hono + Postgres)       |
 | `link-in-bio/`   | link-in-bio | web   | 3000 | Linktree-style links page (Hono + Postgres) |
 | `event-rsvp/`    | event-rsvp | web    | 3000 | Event page + RSVP guest list (Hono + Postgres) |
+| `better-auth/`   | better-auth | web   | 3000 | Email/password auth + sessions, pre-wired (Better Auth + Postgres) |
 
 A **web** template is an HTTP service that gets a port + a domain. A **worker**
 is a headless long-running process (queue consumer, scheduler) with no port and
