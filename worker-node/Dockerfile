@@ -11,7 +11,10 @@ FROM base AS build
 # final image stays toolchain-free.
 RUN apk add --no-cache python3 make g++
 COPY package.json pnpm-lock.yaml* ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod=false
+# --prod: the runtime stage copies this node_modules straight into the image,
+# and there is no build step that would need a devDependency. Anything the
+# app needs at run time belongs in `dependencies` (see AGENTS.md).
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
 
 FROM base AS runtime
 ENV NODE_ENV=production

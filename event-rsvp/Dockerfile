@@ -7,7 +7,10 @@ RUN corepack enable
 # Build stage exists only to resolve node_modules from the manifest + lockfile.
 FROM base AS build
 COPY package.json pnpm-lock.yaml* ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod=false
+# --prod: the runtime stage copies this node_modules straight into the image,
+# and there is no build step that would need a devDependency. Anything the
+# app needs at run time belongs in `dependencies` (see AGENTS.md).
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
 
 FROM base AS runtime
 ENV NODE_ENV=production

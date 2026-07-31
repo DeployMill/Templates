@@ -91,9 +91,10 @@ commit a database file into the repo (it won't be on the volume anyway).
   Run `CREATE TABLE IF NOT EXISTS` at boot as a lightweight migration; it's
   idempotent.
 - **Add a dependency** → add it to `dependencies` in `package.json`. The build
-  runs `pnpm install`, so the next deploy picks it up. (No lockfile is committed;
-  add a `pnpm-lock.yaml` for reproducible installs — the Dockerfile already globs
-  it.)
+  runs `pnpm install --prod`, so the next deploy picks it up. `devDependencies`
+  are deliberately NOT installed into the image — anything the app needs at run
+  time belongs in `dependencies`. (No lockfile is committed; add a
+  `pnpm-lock.yaml` for reproducible installs — the Dockerfile already globs it.)
 - **Native (C/C++) addon dep** (`bcrypt`, `sharp`, …) → pnpm **skips dependency
   build scripts by default**, so an unguarded install goes green and then
   crash-loops at runtime with `Could not locate the bindings file`. Add the
