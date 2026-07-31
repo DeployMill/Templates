@@ -49,7 +49,9 @@ something else at runtime.
 - **Add an MCP tool** → add a `mcp.tool(name, description, zodSchema, handler)`
   call inside `buildMcpServer()` in `src/index.js`. That's how an agent calls it.
 - **Add a dependency** → add it to `dependencies` in `package.json`; the next
-  deploy runs `pnpm install`.
+  deploy runs `pnpm install --prod`. `devDependencies` are deliberately NOT
+  installed into the image — anything the server needs at run time belongs in
+  `dependencies`.
 - **Native (C/C++) addon dep** (`better-sqlite3`, `bcrypt`, `sharp`, …) → pnpm
   **skips dependency build scripts by default**, so an unguarded install goes green
   and then crash-loops at runtime with `Could not locate the bindings file`. Add the

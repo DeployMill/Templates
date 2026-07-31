@@ -53,7 +53,9 @@ something else at runtime.
 - **Do real work** → replace the `doWork()` heartbeat in `src/index.js` (poll a
   queue, run a sweep, consume a stream). Keep the keep-alive timer/loop.
 - **Add a dependency** → add it to `dependencies` in `package.json`; the next
-  deploy runs `pnpm install`. (This starter has none.)
+  deploy runs `pnpm install --prod`. (This starter has none.) `devDependencies`
+  are deliberately NOT installed into the image — anything the worker needs at
+  run time belongs in `dependencies`.
 - **Native (C/C++) addon dep** (`better-sqlite3`, `bcrypt`, `sharp`, …) → pnpm
   **skips dependency build scripts by default**, so an unguarded install goes green
   and then crash-loops at runtime with `Could not locate the bindings file`. Add the
