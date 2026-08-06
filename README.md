@@ -5,9 +5,19 @@ new app when an agent calls `start_project`. DeployMill fetches these at runtime
 so improvements here ship to every server **without a DeployMill deploy** (subject
 to a short cache window).
 
-These templates are **bases, not finished apps** — they exist to get the very
-first deploy green and pin the container port. The agent then evolves the app
-(framework, deps, routes, database) on top of the scaffold.
+Templates come in **two kinds**, and every manifest declares which it is:
+
+- **`kind: "runtime"`** — a base, not a finished app. It exists to get the very
+  first deploy green and pin the container port; the agent then evolves the real
+  app (framework, deps, routes, database) on top, typically **replacing** the
+  scaffold outright on the first push. `static`, `node`, `node-sqlite`,
+  `python`, and `mcp-node` are these.
+- **`kind: "app"`** — a complete, working app the user **remixes** rather than
+  replaces. `kanban`, `todo`, `link-in-bio`, `event-rsvp`, and `better-auth` are
+  these, and each provisions its own managed Postgres at scaffold time.
+
+`list_templates` surfaces that distinction, so an agent can tell a throwaway
+shell from a finished app *before* it picks one.
 
 Every template ships an **`AGENTS.md`** that scaffolds into the new repo
 alongside the code. It's the build/run/layout contract written **for the agent**:
@@ -20,20 +30,20 @@ never updated. **Read `AGENTS.md` in the scaffolded repo before restructuring it
 
 ## What's here
 
-| Directory        | Stack    | Workload | Port | Starter                                   |
-|------------------|----------|----------|------|-------------------------------------------|
-| `static/`        | static   | web      | 8080 | HTML/CSS/JS served by nginx               |
-| `node/`          | node     | web      | 3000 | Node 24 minimal HTTP server (Hono)        |
-| `node-sqlite/`   | node-sqlite | web   | 3000 | Node 24 (Hono) + persistent SQLite (`node:sqlite`) |
-| `python/`        | python   | web      | 8000 | FastAPI HTTP server                       |
-| `mcp-node/`      | mcp-node | web      | 3000 | MCP server (Node.js) over Streamable HTTP |
-| `worker-node/`   | node     | worker   | —    | Node 24 long-running background worker    |
-| `worker-python/` | python   | worker   | —    | Python long-running background worker     |
-| `kanban/`        | kanban   | web      | 3000 | Trello-style board (Hono + Postgres)      |
-| `todo/`          | todo     | web      | 3000 | To-do / task list (Hono + Postgres)       |
-| `link-in-bio/`   | link-in-bio | web   | 3000 | Linktree-style links page (Hono + Postgres) |
-| `event-rsvp/`    | event-rsvp | web    | 3000 | Event page + RSVP guest list (Hono + Postgres) |
-| `better-auth/`   | better-auth | web   | 3000 | Email/password auth + sessions, pre-wired (Better Auth + Postgres) |
+| Directory        | Stack    | Kind    | Runtime | Workload | Port | Starter                                   |
+|------------------|----------|---------|---------|----------|------|-------------------------------------------|
+| `static/`        | static   | runtime | static  | web      | 8080 | HTML/CSS/JS served by nginx               |
+| `node/`          | node     | runtime | node    | web      | 3000 | Node 24 minimal HTTP server (Hono)        |
+| `node-sqlite/`   | node-sqlite | runtime | node | web    | 3000 | Node 24 (Hono) + persistent SQLite (`node:sqlite`) |
+| `python/`        | python   | runtime | python  | web      | 8000 | FastAPI HTTP server                       |
+| `mcp-node/`      | mcp-node | runtime | node    | web      | 3000 | MCP server (Node.js) over Streamable HTTP |
+| `worker-node/`   | node     | runtime | node    | worker   | —    | Node 24 long-running background worker    |
+| `worker-python/` | python   | runtime | python  | worker   | —    | Python long-running background worker     |
+| `kanban/`        | kanban   | app     | node    | web      | 3000 | Trello-style board (Hono + Postgres)      |
+| `todo/`          | todo     | app     | node    | web      | 3000 | To-do / task list (Hono + Postgres)       |
+| `link-in-bio/`   | link-in-bio | app  | node    | web      | 3000 | Linktree-style links page (Hono + Postgres) |
+| `event-rsvp/`    | event-rsvp | app   | node    | web      | 3000 | Event page + RSVP guest list (Hono + Postgres) |
+| `better-auth/`   | better-auth | app  | node    | web      | 3000 | Email/password auth + sessions, pre-wired (Better Auth + Postgres) |
 
 A **web** template is an HTTP service that gets a port + a domain. A **worker**
 is a headless long-running process (queue consumer, scheduler) with no port and
@@ -79,6 +89,8 @@ its manifest + list it in the root index."
   "schemaVersion": 1,
   "stack": "node",          // stack key (groups web + worker variants together)
   "workload": "web",        // "web" (port + domain) or "worker" (headless)
+  "kind": "runtime",        // "runtime" (a base to replace) or "app" (remix it)
+  "runtime": "node",        // scaffold language: "node" | "python" | "static"
   "title": "Node.js",       // shown in the list_templates catalog
   "description": "Node 24 minimal HTTP server (Hono).",
   "port": 3000,             // container port for web; null for workers
@@ -92,6 +104,21 @@ catalog entry: `node/` (workload `web`) and `worker-node/` (workload `worker`)
 both have `stack: "node"`, so the catalog surfaces one `node` entry whose
 `workloads` is `["web", "worker"]`. A stack must have a `web` variant to appear
 in the catalog.
+
+`kind` tells an agent whether this is a base to **replace** or a finished app to
+**remix** — it's the field they branch on when choosing. It's technically
+optional: DeployMill infers it when absent (a template declaring a `database` is
+treated as an app), but that's a back-compat fallback, not a contract. **Declare
+it.**
+
+`runtime` names the scaffold's language and selects the conventions guide the
+agent is pointed at after scaffolding (`deploymill://guides/conventions/node`,
+`…/python`). Also optional, and also worth declaring — without it DeployMill
+falls back to matching the **stack key** against `node`/`python`, so any template
+whose key isn't its language (every `app` template: `kanban`, `better-auth`, …)
+gets **no conventions guide at all**. Note the catalog reads these from the
+**web** variant, so a worker-only manifest's values never reach an entry — set
+them anyway for consistency.
 
 ### Root `deploymill.json` (index)
 
@@ -117,7 +144,8 @@ lives in the per-directory manifest (one source of truth per template).
 1. Add a directory with the scaffold files. It **must** contain a `Dockerfile`
    (`buildType` is `dockerfile`). Use `{{PROJECT_NAME}}` anywhere the new
    project's name should be substituted in.
-2. Add a `deploymill.json` to the directory (see the schema above).
+2. Add a `deploymill.json` to the directory (see the schema above). Set `kind`
+   and `runtime` explicitly — don't lean on the inference fallbacks.
 3. Add an **`AGENTS.md`** to the directory — the agent-facing build/run/layout
    contract (entrypoint, what the Dockerfile copies, where code/assets go, how to
    add deps + change the port, gotchas). Copy an existing template's as the shape.
@@ -125,10 +153,13 @@ lives in the per-directory manifest (one source of truth per template).
    Dockerfile `COPY . `s the whole root; harmless elsewhere).
 4. List the directory in the root `deploymill.json`.
 
-Keep starters **minimal** — the goal is "first deploy green," not a feature-rich
-app. Every file in the directory (except its `deploymill.json` manifest) is
-copied verbatim into the scaffolded repo with `{{PROJECT_NAME}}` substituted —
-so `AGENTS.md` and any pointer comments ride along automatically.
+Keep a **`runtime`** starter minimal — its goal is "first deploy green," not a
+feature-rich app, and it's going to be replaced anyway. An **`app`** starter is
+the opposite: it should be genuinely complete and useful on its first load,
+because the user keeps it and edits from there. Every file in the directory
+(except its `deploymill.json` manifest) is copied verbatim into the scaffolded
+repo with `{{PROJECT_NAME}}` substituted — so `AGENTS.md` and any pointer
+comments ride along automatically.
 
 ### The "Built on deploymill" badge
 

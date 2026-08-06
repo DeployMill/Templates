@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "mcp-node",
   "workload": "web",
+  "kind": "runtime",
+  "runtime": "node",
   "title": "MCP Server (Node.js)",
   "description": "Model Context Protocol server — expose tools and resources to AI agents over HTTP.",
   "port": 3000,

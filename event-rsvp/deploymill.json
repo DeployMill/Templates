@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "event-rsvp",
   "workload": "web",
+  "kind": "app",
+  "runtime": "node",
   "title": "Event + RSVP",
   "description": "A shareable event page with a public RSVP form and a live guest list. Postgres-backed.",
   "port": 3000,

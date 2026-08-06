@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "better-auth",
   "workload": "web",
+  "kind": "app",
+  "runtime": "node",
   "title": "Auth Starter (Better Auth)",
   "description": "Email/password login, sign-up, sign-out, and a protected route — pre-wired with Better Auth on managed Postgres. Add Google/GitHub via a secret.",
   "port": 3000,

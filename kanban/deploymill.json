@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "kanban",
   "workload": "web",
+  "kind": "app",
+  "runtime": "node",
   "title": "Kanban Board",
   "description": "Trello-style board — columns, cards, labels. Postgres-backed, no setup.",
   "port": 3000,
