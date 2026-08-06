@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "link-in-bio",
   "workload": "web",
+  "kind": "app",
+  "runtime": "node",
   "title": "Link in Bio",
   "description": "A shareable personal links page — avatar, bio, themed link buttons. Postgres-backed.",
   "port": 3000,

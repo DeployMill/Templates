@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "node",
   "workload": "web",
+  "kind": "runtime",
+  "runtime": "node",
   "title": "Node.js",
   "description": "Node 24 minimal HTTP server (Hono).",
   "port": 3000,

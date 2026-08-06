@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "python",
   "workload": "worker",
+  "kind": "runtime",
+  "runtime": "python",
   "title": "Python worker",
   "description": "Python long-running background worker (no HTTP port, no domain).",
   "port": null,

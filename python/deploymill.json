@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "python",
   "workload": "web",
+  "kind": "runtime",
+  "runtime": "python",
   "title": "Python",
   "description": "FastAPI (Python) HTTP server.",
   "port": 8000,

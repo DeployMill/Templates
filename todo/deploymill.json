@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "todo",
   "workload": "web",
+  "kind": "app",
+  "runtime": "node",
   "title": "To-Do List",
   "description": "Simple, fast task list — lists, due dates, done state. Postgres-backed.",
   "port": 3000,

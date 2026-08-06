@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "stack": "static",
   "workload": "web",
+  "kind": "runtime",
+  "runtime": "static",
   "title": "Static site",
   "description": "HTML/CSS/JS served by nginx. No runtime — just static assets.",
   "port": 8080,
