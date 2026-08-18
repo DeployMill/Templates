@@ -5,7 +5,7 @@
   "kind": "app",
   "runtime": "node",
   "title": "DeployMill Tutorial",
-  "description": "The interactive onboarding tutorial — connect your agent, install the skill, then learn previews, logs, rollback and backups by editing this very site.",
+  "description": "Learn DeployMill by editing a live app: connect your agent, then run previews, logs, rollback and backups against the site itself. New workspaces get one of these already running.",
   "port": 3000,
   "buildType": "dockerfile"
 }
