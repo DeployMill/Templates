@@ -18,6 +18,10 @@
 //              copy box. This is the heart of most lessons.
 //   note     — optional. A short aside under the prompt (a caveat, a "what to
 //              expect", a plan requirement).
+//   file     — optional. A file to show IN FULL, collapsed, with a copy button
+//              and a link to its raw URL: { name, path, description }. `path`
+//              is served straight from public/, so the same bytes the page
+//              shows are the bytes a curl or an agent fetch gets.
 
 /** Setup — get your agent talking to DeployMill. Do these in order. */
 export const SETUP_LESSONS = [
@@ -41,14 +45,18 @@ export const SETUP_LESSONS = [
   },
   {
     id: "skill",
-    title: "Install the DeployMill skill (optional)",
+    title: "Add the DeployMill skill (optional)",
     body: [
       "The MCP tools are enough on their own. The skill just makes your agent proactive: when you mention a new project, a landing page or a prototype, it offers to build and deploy it instead of waiting to be asked.",
-      "It's a folder with a SKILL.md in it. Drop it where your agent looks for skills — ~/.claude/skills/ for everything you work on, or .claude/skills/ inside one project.",
+      "It's one markdown file, and here it is in full. Save it as SKILL.md in a folder named deploy-new-app, wherever your agent looks for skills — ~/.claude/skills/deploy-new-app/SKILL.md covers everything you work on, or .claude/skills/deploy-new-app/SKILL.md scopes it to one project.",
+      "If your agent uses some other convention, take the markdown and do whatever suits it. It's a prompt, not a package — nothing about it is DeployMill-specific plumbing.",
     ],
-    prompt:
-      "Fetch the DeployMill deploy-new-app skill from https://github.com/DeployMill/deploymill/tree/main/skills/deploy-new-app and install it into ~/.claude/skills/, then confirm it's picked up.",
-    note: "Skip this if your client doesn't support skills — nothing else in this tutorial depends on it.",
+    file: {
+      name: "SKILL.md",
+      path: "/deploy-new-app.md",
+      description: "The deploy-new-app skill, in full.",
+    },
+    note: "Skip this entirely if your client has no skill support — nothing else in this tutorial depends on it.",
   },
   {
     id: "first-edit",

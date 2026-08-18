@@ -33,9 +33,37 @@ function copyBlock(label, value, variant = "prompt") {
     </div>`;
 }
 
-function lessonCard(lesson, index) {
+/**
+ * A whole file shown on the page: collapsed by default (some are hundreds of
+ * lines), with a copy button and a link to the raw URL. Collapsed rather than
+ * omitted because the point is that you can read the thing before you run it —
+ * a skill is a prompt someone else wrote for your agent, and pasting one you
+ * haven't looked at is exactly the habit not to teach.
+ */
+function fileBlock(file, body) {
+  if (!body) return "";
+  const lines = body.replace(/\n$/, "").split("\n").length;
+  return `
+    <details class="filebox">
+      <summary>
+        <span class="filebox-name">${esc(file.name)}</span>
+        <span class="filebox-meta">${lines} lines · click to read</span>
+      </summary>
+      <div class="filebox-body">
+        ${file.description ? `<p class="note">${esc(file.description)}</p>` : ""}
+        ${copyBlock(`Copy ${file.name}`, body, "command")}
+        <p class="hint">
+          Or fetch it raw: <a href="${esc(file.path)}">${esc(file.path)}</a> — same bytes,
+          so you can point your agent straight at the URL.
+        </p>
+      </div>
+    </details>`;
+}
+
+function lessonCard(lesson, index, fileBodies) {
   const body = lesson.body.map((p) => `<p>${esc(p)}</p>`).join("");
   const prompt = lesson.prompt ? copyBlock("Paste this to your agent", lesson.prompt) : "";
+  const file = lesson.file ? fileBlock(lesson.file, fileBodies?.[lesson.file.path]) : "";
   const note = lesson.note ? `<p class="note">${esc(lesson.note)}</p>` : "";
   return `
     <li class="lesson" id="lesson-${esc(lesson.id)}" data-lesson="${esc(lesson.id)}">
@@ -47,7 +75,7 @@ function lessonCard(lesson, index) {
           <span>Done</span>
         </label>
       </div>
-      <div class="lesson-body">${body}${prompt}${note}</div>
+      <div class="lesson-body">${body}${prompt}${file}${note}</div>
     </li>`;
 }
 
@@ -99,18 +127,25 @@ function expiryBanner() {
     </div>`;
 }
 
-export function renderPage() {
+/**
+ * Render the whole page. `fileBodies` maps a lesson `file.path` to that file's
+ * contents (see src/index.js) so a lesson can show a file in full without this
+ * module touching the filesystem.
+ */
+export function renderPage(fileBodies = {}) {
   const greeting = config.greeting
     ? `<p class="greeting">${esc(config.greeting)}</p>`
     : "";
   const setup = SETUP_LESSONS.map((lesson, i) => {
-    const card = lessonCard(lesson, i);
+    const card = lessonCard(lesson, i, fileBodies);
     // Splice the client picker into the connect lesson's body.
     return lesson.id === "connect"
       ? card.replace("</div>\n    </li>", `${clientPicker()}</div>\n    </li>`)
       : card;
   }).join("");
-  const advanced = ADVANCED_LESSONS.map(lessonCard).join("");
+  const advanced = ADVANCED_LESSONS.map((lesson, i) =>
+    lessonCard(lesson, i, fileBodies)
+  ).join("");
 
   return html`<!doctype html>
 <html lang="en">

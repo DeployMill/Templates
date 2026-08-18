@@ -304,6 +304,88 @@ h2 {
   word-break: normal;
 }
 
+/* ---- a whole file shown inline (collapsed) ---- */
+.filebox {
+  margin: 0.9rem 0 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.filebox > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+
+/* Swap the default disclosure triangle for one that reads in both themes. */
+.filebox > summary::-webkit-details-marker {
+  display: none;
+}
+
+.filebox > summary::before {
+  content: "▸";
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  transition: transform 0.12s ease;
+}
+
+.filebox[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.filebox-name {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.filebox-meta {
+  font-size: 0.78rem;
+  color: var(--ink-2);
+}
+
+.filebox-body {
+  padding: 0 0.75rem 0.75rem;
+}
+
+/* A long file scrolls VERTICALLY inside its own box rather than stretching the
+   page — but wraps horizontally. A shell command is read left-to-right so it
+   keeps `pre`; a markdown document is prose, and making someone scroll sideways
+   through 160 lines of it to read a sentence is the wrong trade. */
+.filebox-body .copy-body {
+  max-height: 26rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.filebox-body .copy.command .copy-body code {
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.filebox-body .note {
+  margin-top: 0 !important;
+}
+
+.hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.hint a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ---- client tabs ---- */
 .clients {
   margin-top: 1rem;
