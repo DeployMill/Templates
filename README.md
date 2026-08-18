@@ -13,8 +13,9 @@ Templates come in **two kinds**, and every manifest declares which it is:
   scaffold outright on the first push. `static`, `node`, `node-sqlite`,
   `python`, and `mcp-node` are these.
 - **`kind: "app"`** — a complete, working app the user **remixes** rather than
-  replaces. `kanban`, `todo`, `link-in-bio`, `event-rsvp`, and `better-auth` are
-  these, and each provisions its own managed Postgres at scaffold time.
+  replaces. `kanban`, `todo`, `link-in-bio`, `event-rsvp`, `better-auth` and
+  `tutorial` are these. All but `tutorial` provision their own managed Postgres
+  at scaffold time; `tutorial` deliberately ships without one (see below).
 
 `list_templates` surfaces that distinction, so an agent can tell a throwaway
 shell from a finished app *before* it picks one.
@@ -44,6 +45,7 @@ never updated. **Read `AGENTS.md` in the scaffolded repo before restructuring it
 | `link-in-bio/`   | link-in-bio | app  | node    | web      | 3000 | Linktree-style links page (Hono + Postgres) |
 | `event-rsvp/`    | event-rsvp | app   | node    | web      | 3000 | Event page + RSVP guest list (Hono + Postgres) |
 | `better-auth/`   | better-auth | app  | node    | web      | 3000 | Email/password auth + sessions, pre-wired (Better Auth + Postgres) |
+| `tutorial/`      | tutorial | app     | node    | web      | 3000 | The interactive onboarding tutorial (Hono, no database)  |
 
 A **web** template is an HTTP service that gets a port + a domain. A **worker**
 is a headless long-running process (queue consumer, scheduler) with no port and

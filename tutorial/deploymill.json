@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "stack": "tutorial",
+  "workload": "web",
+  "kind": "app",
+  "runtime": "node",
+  "title": "DeployMill Tutorial",
+  "description": "Learn DeployMill by editing a live app: connect your agent, then run previews, logs, rollback and backups against the site itself. New workspaces get one of these already running.",
+  "port": 3000,
+  "buildType": "dockerfile"
+}

@@ -12,6 +12,7 @@
     { "dir": "todo" },
     { "dir": "link-in-bio" },
     { "dir": "event-rsvp" },
-    { "dir": "better-auth" }
+    { "dir": "better-auth" },
+    { "dir": "tutorial" }
   ]
 }
