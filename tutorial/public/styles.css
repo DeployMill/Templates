@@ -1,0 +1,376 @@
+/* The tutorial's whole look, in one file. No framework, no build step — change a
+   token below and the entire page moves with it.
+
+   Light and dark both come from the same variables: the dark palette only
+   redefines the tokens, so nothing can be styled correctly in one theme and
+   broken in the other. */
+
+:root {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f4f5f8;
+  --border: #e3e5ea;
+  --ink: #14161c;
+  --ink-2: #5b616e;
+  --accent: #4338ca;
+  --accent-ink: #ffffff;
+  --accent-soft: #eef0ff;
+  --warn: #b45309;
+  --warn-soft: #fef3c7;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(16, 18, 27, 0.04), 0 8px 24px rgba(16, 18, 27, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0e14;
+    --surface: #14171f;
+    --surface-2: #1b1f29;
+    --border: #272c38;
+    --ink: #e8eaf0;
+    --ink-2: #9aa1b1;
+    --accent: #8b87ff;
+    --accent-ink: #14161c;
+    --accent-soft: #1e1f3a;
+    --warn: #fbbf24;
+    --warn-soft: #2f2410;
+    --danger: #f87171;
+    --danger-soft: #331717;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 4rem;
+}
+
+/* ---- hero ---- */
+.hero {
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--ink-2);
+  max-width: 38rem;
+}
+
+.greeting {
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.progress {
+  margin-top: 1.25rem;
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.progress [data-progress] {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---- expiry banner ---- */
+.banner {
+  margin: 0 0 2.5rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.banner.info {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  background: var(--accent-soft);
+}
+
+.banner.warn {
+  border-color: color-mix(in srgb, var(--warn) 45%, var(--border));
+  background: var(--warn-soft);
+}
+
+.banner.danger {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: var(--danger-soft);
+}
+
+.banner a {
+  color: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---- sections ---- */
+section {
+  margin-bottom: 3rem;
+}
+
+h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+}
+
+.sub {
+  margin: 0 0 1.25rem;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+
+/* ---- lessons ---- */
+.lessons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.lesson {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+
+.lesson.is-done {
+  opacity: 0.62;
+}
+
+.lesson-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1rem 1.1rem;
+}
+
+.lesson-num {
+  flex: none;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.lesson.is-done .lesson-num {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.lesson-head h3 {
+  margin: 0;
+  flex: 1;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+}
+
+.lesson-done {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.lesson-body {
+  padding: 0 1.1rem 1.1rem;
+}
+
+.lesson-body p {
+  margin: 0 0 0.7rem;
+  color: var(--ink-2);
+  font-size: 0.94rem;
+}
+
+.note {
+  margin-top: 0.7rem !important;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--border);
+  font-size: 0.87rem !important;
+}
+
+/* ---- copy blocks ---- */
+.copy {
+  margin: 0.9rem 0 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.copy-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.5rem 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.copy-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.copy-btn {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.22rem 0.6rem;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.copy-body {
+  margin: 0;
+  padding: 0.75rem;
+  overflow-x: auto;
+}
+
+.copy-body code {
+  font: 0.855rem/1.6 ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.copy.command .copy-body code {
+  white-space: pre;
+  word-break: normal;
+}
+
+/* ---- client tabs ---- */
+.clients {
+  margin-top: 1rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.2rem;
+}
+
+.tab {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.83rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.active {
+  display: block;
+}
+
+/* ---- footer ---- */
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.87rem;
+}
+
+footer a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+.footer-note {
+  color: var(--ink-2);
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}

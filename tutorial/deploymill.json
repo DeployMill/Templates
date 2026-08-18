@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "stack": "tutorial",
+  "workload": "web",
+  "kind": "app",
+  "runtime": "node",
+  "title": "DeployMill Tutorial",
+  "description": "The interactive onboarding tutorial — connect your agent, install the skill, then learn previews, logs, rollback and backups by editing this very site.",
+  "port": 3000,
+  "buildType": "dockerfile"
+}
