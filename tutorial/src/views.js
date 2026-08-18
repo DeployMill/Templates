@@ -66,9 +66,9 @@ function lessonCard(lesson, index, fileBodies) {
   const file = lesson.file ? fileBlock(lesson.file, fileBodies?.[lesson.file.path]) : "";
   const note = lesson.note ? `<p class="note">${esc(lesson.note)}</p>` : "";
   return `
-    <li class="lesson" id="lesson-${esc(lesson.id)}" data-lesson="${esc(lesson.id)}">
+    <li class="lesson reveal" id="lesson-${esc(lesson.id)}" data-lesson="${esc(lesson.id)}">
       <div class="lesson-head">
-        <span class="lesson-num" aria-hidden="true">${index + 1}</span>
+        <span class="lesson-num" aria-hidden="true"><span>${index + 1}</span></span>
         <h3>${esc(lesson.title)}</h3>
         <label class="lesson-done">
           <input type="checkbox" data-done="${esc(lesson.id)}" />
@@ -147,6 +147,8 @@ export function renderPage(fileBodies = {}) {
     lessonCard(lesson, i, fileBodies)
   ).join("");
 
+  const total = SETUP_LESSONS.length + ADVANCED_LESSONS.length;
+
   return html`<!doctype html>
 <html lang="en">
 <head>
@@ -156,17 +158,26 @@ export function renderPage(fileBodies = {}) {
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
+  <div class="aurora" aria-hidden="true"><span></span></div>
   <main>
     <header class="hero">
-      <p class="eyebrow">Your workspace${config.orgSlug ? ` · ${esc(config.orgSlug)}` : ""}</p>
-      <h1>This app is your tutorial.</h1>
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Your workspace${config.orgSlug ? ` · ${esc(config.orgSlug)}` : ""}</p>
+      <h1>This app is <span class="grad">your tutorial.</span></h1>
       <p class="lede">
         It's a real, deployed app in your workspace — same repo, same pipeline, same everything as
         anything else you'll ship here. You learn DeployMill by changing it and watching the change
         go live.
       </p>
       ${raw(greeting)}
-      <div class="progress"><span data-progress>0</span> of ${SETUP_LESSONS.length + ADVANCED_LESSONS.length} done</div>
+      <div class="progress" data-progress-meter>
+        <div class="progress-top">
+          <span class="progress-count"><span data-progress>0</span> of ${total} lessons done</span>
+          <span class="progress-pct" data-progress-pct>0%</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="Lessons completed" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="0">
+          <div class="progress-bar" data-progress-bar></div>
+        </div>
+      </div>
     </header>
 
     ${raw(expiryBanner())}

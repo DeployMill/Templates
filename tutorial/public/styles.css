@@ -3,7 +3,12 @@
 
    Light and dark both come from the same variables: the dark palette only
    redefines the tokens, so nothing can be styled correctly in one theme and
-   broken in the other. */
+   broken in the other.
+
+   The palette is DeployMill's: an indigo→violet→cyan spectrum on a near-neutral
+   ground. Two accents (`--accent` indigo, `--accent-2` violet) plus a cyan spark
+   (`--spark`) drive every gradient, glow and highlight, so the whole page reads
+   as one family. */
 
 :root {
   --bg: #fbfbfd;
@@ -13,14 +18,24 @@
   --ink: #14161c;
   --ink-2: #5b616e;
   --accent: #4338ca;
+  --accent-2: #7c3aed;
+  --spark: #06b6d4;
   --accent-ink: #ffffff;
   --accent-soft: #eef0ff;
   --warn: #b45309;
   --warn-soft: #fef3c7;
   --danger: #b91c1c;
   --danger-soft: #fee2e2;
+  --ok: #059669;
   --radius: 12px;
   --shadow: 0 1px 2px rgba(16, 18, 27, 0.04), 0 8px 24px rgba(16, 18, 27, 0.06);
+  --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 12px 34px -10px color-mix(in srgb, var(--accent) 40%, transparent);
+  /* One gradient, reused everywhere so text, bars and glows stay in the same key. */
+  --grad: linear-gradient(100deg, var(--accent), var(--accent-2) 55%, var(--spark));
+  --aurora-1: color-mix(in srgb, var(--accent) 55%, transparent);
+  --aurora-2: color-mix(in srgb, var(--accent-2) 50%, transparent);
+  --aurora-3: color-mix(in srgb, var(--spark) 45%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,13 +47,18 @@
     --ink: #e8eaf0;
     --ink-2: #9aa1b1;
     --accent: #8b87ff;
+    --accent-2: #b794ff;
+    --spark: #4dd6e8;
     --accent-ink: #14161c;
     --accent-soft: #1e1f3a;
     --warn: #fbbf24;
     --warn-soft: #2f2410;
     --danger: #f87171;
     --danger-soft: #331717;
+    --ok: #34d399;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+    --glow: 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+      0 16px 44px -12px color-mix(in srgb, var(--accent) 55%, transparent);
   }
 }
 
@@ -52,6 +72,71 @@ body {
   color: var(--ink);
   font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ---- animated aurora backdrop ----
+   A fixed, decorative wash behind everything. Three blurred blobs from the
+   palette drift slowly and never touch the content — pure atmosphere. It sits
+   at -1 so text always wins, and it's aria-hidden in the markup. */
+.aurora {
+  position: fixed;
+  inset: -20vmax;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(90px) saturate(1.1);
+  opacity: 0.9;
+}
+
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.aurora::before {
+  width: 46vmax;
+  height: 46vmax;
+  top: -6vmax;
+  left: -4vmax;
+  background: radial-gradient(circle at 30% 30%, var(--aurora-1), transparent 62%);
+  animation: drift-a 26s ease-in-out infinite;
+}
+
+.aurora::after {
+  width: 40vmax;
+  height: 40vmax;
+  top: 8vmax;
+  right: -6vmax;
+  left: auto;
+  background: radial-gradient(circle at 70% 40%, var(--aurora-2), transparent 62%);
+  animation: drift-b 32s ease-in-out infinite;
+}
+
+/* A third blob, low and centre, to close the triangle. */
+.aurora > span {
+  position: absolute;
+  bottom: 4vmax;
+  left: 30%;
+  width: 38vmax;
+  height: 38vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, var(--aurora-3), transparent 60%);
+  animation: drift-c 38s ease-in-out infinite;
+}
+
+@keyframes drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6vmax, 4vmax) scale(1.12); }
+}
+@keyframes drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1.05); }
+  50% { transform: translate(-5vmax, 6vmax) scale(0.92); }
+}
+@keyframes drift-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-4vmax, -5vmax) scale(1.1); }
 }
 
 main {
@@ -66,19 +151,61 @@ main {
 }
 
 .eyebrow {
-  margin: 0 0 0.5rem;
-  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.9rem;
+  padding: 0.28rem 0.7rem 0.28rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
 
+/* A live status dot with a soft radar pulse — the app you're reading is up. */
+.eyebrow .dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 70%, transparent);
+  animation: pulse-dot 2.4s ease-out infinite;
+}
+
+@keyframes pulse-dot {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent); }
+  70% { box-shadow: 0 0 0 0.5rem transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
 h1 {
   margin: 0 0 0.6rem;
-  font-size: clamp(1.9rem, 5vw, 2.6rem);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+/* The one line of colour on the page: the gradient rides slowly across the
+   headline so it feels alive without shouting. */
+h1 .grad {
+  background: linear-gradient(100deg, var(--accent), var(--accent-2) 40%, var(--spark) 70%, var(--accent));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: sheen 8s ease-in-out infinite;
+}
+
+@keyframes sheen {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .lede {
@@ -89,32 +216,100 @@ h1 {
 }
 
 .greeting {
-  margin: 1rem 0 0;
-  padding: 0.7rem 0.9rem;
+  position: relative;
+  margin: 1.1rem 0 0;
+  padding: 0.7rem 0.9rem 0.7rem 1.1rem;
   border-radius: var(--radius);
   background: var(--accent-soft);
   color: var(--ink);
   font-weight: 500;
+  overflow: hidden;
 }
 
+/* A gradient rail down the left edge, shared with the lesson cards. */
+.greeting::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--grad);
+}
+
+/* ---- progress meter ---- */
 .progress {
-  margin-top: 1.25rem;
-  display: inline-block;
-  padding: 0.3rem 0.7rem;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow);
+}
+
+.progress-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
   font-size: 0.85rem;
   color: var(--ink-2);
 }
 
-.progress [data-progress] {
+.progress-count [data-progress] {
   font-weight: 700;
   color: var(--ink);
 }
 
+.progress-pct {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.progress-track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: var(--grad);
+  background-size: 200% 100%;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: bar-flow 3s linear infinite;
+}
+
+@keyframes bar-flow {
+  to { background-position: 200% 50%; }
+}
+
+/* When everything's ticked, the meter gives a little cheer. */
+.progress.is-complete {
+  border-color: color-mix(in srgb, var(--ok) 45%, var(--border));
+  animation: complete-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes complete-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+
 /* ---- expiry banner ---- */
 .banner {
+  position: relative;
   margin: 0 0 2.5rem;
   padding: 0.9rem 1rem;
   border-radius: var(--radius);
@@ -122,6 +317,7 @@ h1 {
   background: var(--surface);
   font-size: 0.92rem;
   line-height: 1.55;
+  overflow: hidden;
 }
 
 .banner.info {
@@ -152,8 +348,8 @@ section {
 
 h2 {
   margin: 0 0 0.25rem;
-  font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
 }
 
 .sub {
@@ -172,16 +368,46 @@ h2 {
 }
 
 .lesson {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: opacity 0.15s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease, border-color 0.25s ease, opacity 0.3s ease;
+}
+
+/* A gradient rail on the left that stays hidden until you hover or complete. */
+.lesson::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--grad);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lesson:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: var(--glow);
+}
+
+.lesson:hover::before {
+  transform: scaleY(1);
 }
 
 .lesson.is-done {
-  opacity: 0.62;
+  opacity: 0.7;
+}
+
+.lesson.is-done::before {
+  transform: scaleY(1);
 }
 
 .lesson-head {
@@ -192,9 +418,10 @@ h2 {
 }
 
 .lesson-num {
+  position: relative;
   flex: none;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.8rem;
+  height: 1.8rem;
   display: grid;
   place-items: center;
   border-radius: 999px;
@@ -202,11 +429,35 @@ h2 {
   color: var(--ink-2);
   font-size: 0.82rem;
   font-weight: 700;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
 .lesson.is-done .lesson-num {
-  background: var(--accent);
+  background: var(--grad);
   color: var(--accent-ink);
+  transform: scale(1.02);
+}
+
+/* Swap the number for a checkmark when done, drawn in CSS so there's no icon
+   font to load. */
+.lesson.is-done .lesson-num::after {
+  content: "";
+  position: absolute;
+  width: 0.34rem;
+  height: 0.6rem;
+  border: solid var(--accent-ink);
+  border-width: 0 2.5px 2.5px 0;
+  transform: translateY(-1px) rotate(45deg);
+  animation: check-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lesson.is-done .lesson-num > span {
+  display: none;
+}
+
+@keyframes check-in {
+  0% { opacity: 0; transform: translateY(-1px) rotate(45deg) scale(0.4); }
+  100% { opacity: 1; transform: translateY(-1px) rotate(45deg) scale(1); }
 }
 
 .lesson-head h3 {
@@ -214,17 +465,31 @@ h2 {
   flex: 1;
   font-size: 1.02rem;
   letter-spacing: -0.01em;
+  transition: color 0.2s ease;
 }
 
 .lesson-done {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
   color: var(--ink-2);
   cursor: pointer;
   user-select: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lesson-done:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.lesson-done input {
+  accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .lesson-body {
@@ -240,7 +505,7 @@ h2 {
 .note {
   margin-top: 0.7rem !important;
   padding-left: 0.7rem;
-  border-left: 2px solid var(--border);
+  border-left: 2px solid color-mix(in srgb, var(--accent) 40%, var(--border));
   font-size: 0.87rem !important;
 }
 
@@ -251,6 +516,11 @@ h2 {
   border-radius: 10px;
   background: var(--surface-2);
   overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.copy:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
 .copy-head {
@@ -271,6 +541,9 @@ h2 {
 }
 
 .copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   border: 1px solid var(--border);
   border-radius: 7px;
   background: var(--surface);
@@ -280,11 +553,22 @@ h2 {
   font-weight: 600;
   padding: 0.22rem 0.6rem;
   cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 
 .copy-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+.copy-btn.is-copied {
+  border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, var(--surface));
 }
 
 .copy-body {
@@ -311,6 +595,11 @@ h2 {
   border-radius: 10px;
   background: var(--surface-2);
   overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.filebox:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
 .filebox > summary {
@@ -330,9 +619,9 @@ h2 {
 
 .filebox > summary::before {
   content: "▸";
-  color: var(--ink-2);
+  color: var(--accent);
   font-size: 0.8rem;
-  transition: transform 0.12s ease;
+  transition: transform 0.15s ease;
 }
 
 .filebox[open] > summary::before {
@@ -395,7 +684,7 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.6rem;
 }
 
 .tab {
@@ -407,15 +696,21 @@ h2 {
   font-size: 0.83rem;
   padding: 0.25rem 0.75rem;
   cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 .tab:hover {
   color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+
+.tab:active {
+  transform: scale(0.96);
 }
 
 .tab.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--grad);
+  border-color: transparent;
   color: var(--accent-ink);
   font-weight: 600;
 }
@@ -426,27 +721,49 @@ h2 {
 
 .panel.active {
   display: block;
+  animation: panel-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes panel-in {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ---- footer ---- */
 footer {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   padding-top: 1.5rem;
+  margin-top: 1rem;
   border-top: 1px solid var(--border);
   font-size: 0.87rem;
+}
+
+/* A thin gradient seam sitting on top of the plain border. */
+footer::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 5rem;
+  height: 2px;
+  background: var(--grad);
+  border-radius: 999px;
 }
 
 footer a {
   color: var(--accent);
   font-weight: 600;
   text-decoration: none;
+  transition: opacity 0.15s ease;
 }
 
 footer a:hover {
   text-decoration: underline;
+  opacity: 0.85;
 }
 
 .footer-note {
@@ -455,4 +772,84 @@ footer a:hover {
 
 code {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+/* ---- scroll-reveal ----
+   Cards start slightly down and transparent; app.js adds .is-in as each scrolls
+   into view, and CSS eases it home. If JS never runs (or is disabled), the
+   fallback rule below keeps everything visible. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- confetti (completion celebration) ---- */
+.confetti-piece {
+  position: fixed;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  z-index: 50;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(102vh) rotate(720deg); opacity: 0.9; }
+}
+
+/* ---- motion off: honour the OS setting ----
+   Everything above is decoration. If the reader asked for less motion, cut the
+   ambient loops and long transitions but keep the page fully usable — reveals
+   resolve instantly, nothing stays hidden. */
+@media (prefers-reduced-motion: reduce) {
+  .aurora::before,
+  .aurora::after,
+  .aurora > span,
+  .eyebrow .dot,
+  h1 .grad,
+  .progress-bar,
+  .lesson.is-done .lesson-num::after,
+  .panel.active {
+    animation: none !important;
+  }
+
+  h1 .grad {
+    background-position: 0% 50% !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .lesson,
+  .lesson::before,
+  .copy-btn,
+  .tab,
+  .lesson-num {
+    transition: none;
+  }
+
+  .confetti-piece {
+    display: none;
+  }
+}
+
+/* No-JS safety net: if scripts don't run, `.reveal` never gets `.is-in`, so make
+   sure the content is visible anyway. */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }
