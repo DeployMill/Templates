@@ -135,8 +135,8 @@ export const ADVANCED_LESSONS = [
       "Previews get their own isolated copy of the database, which is what makes it safe to test a migration.",
     ],
     prompt:
-      "Add a managed Postgres database to my DeployMill tutorial app, then add a page that records how many times each lesson has been marked done and shows the totals.",
-    note: "Once it has a database, ask your agent about backups — listing them, verifying one, and restoring from one.",
+      "Add a managed Postgres database to my DeployMill tutorial app. Then add a page that reads DATABASE_URL to record how many times each lesson has been marked done and shows the running totals right on that page.",
+    note: "The totals render on the page itself — the app reads its own DATABASE_URL, so you don't need direct SQL to see them (ad-hoc query_database is a paid feature and isn't required here). Once it has a database, ask your agent about backups too — listing them, verifying one, and restoring one in place.",
   },
   {
     id: "domain",
