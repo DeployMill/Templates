@@ -27,6 +27,13 @@ const assets = {
     body: readFileSync(join(publicDir, "app.js"), "utf8"),
     type: "text/javascript; charset=utf-8",
   },
+  // The deploy-new-app skill, served raw. The page also SHOWS this file inline,
+  // and both read the same bytes — so "copy it off the page" and "curl it" (or
+  // point an agent at the URL) can never drift apart.
+  "/deploy-new-app.md": {
+    body: readFileSync(join(publicDir, "deploy-new-app.md"), "utf8"),
+    type: "text/markdown; charset=utf-8",
+  },
 };
 
 const app = new Hono();
@@ -42,7 +49,13 @@ for (const [path, asset] of Object.entries(assets)) {
   app.get(path, (c) => c.body(asset.body, 200, { "content-type": asset.type }));
 }
 
-app.get("/", (c) => c.html(renderPage()));
+// The page renders any lesson `file` inline, so hand it the same already-read
+// bodies the asset routes serve rather than reading them a second time.
+const fileBodies = Object.fromEntries(
+  Object.entries(assets).map(([path, asset]) => [path, asset.body])
+);
+
+app.get("/", (c) => c.html(renderPage(fileBodies)));
 
 const port = Number(process.env.PORT ?? 3000);
 serve({ fetch: app.fetch, port }, (info) => {

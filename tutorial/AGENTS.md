@@ -35,11 +35,19 @@ assets. Anything outside `src/` and `public/` is **not** in the image.
 | `src/tick.js` | The `POST /_system/tick` scheduled-jobs receiver. No schedules declared, so it never fires — add one and register a handler here. |
 | `public/styles.css` | All styling. Light + dark come from the same tokens at the top. |
 | `public/app.js` | Copy buttons, client tabs, and the "done" checkmarks (localStorage only). |
+| `public/deploy-new-app.md` | The DeployMill skill, shown in full in the setup lesson AND served raw at `/deploy-new-app.md`. Both read the same bytes, so the page and the URL can't drift. |
 
 **Changing the tutorial's words is almost always `src/content.js`.** A lesson is a
-plain object — `{ id, title, body[], prompt?, note? }` — and the page rebuilds
-itself from the array, so adding, removing or rewriting a lesson needs no change
-to the rendering code.
+plain object — `{ id, title, body[], prompt?, file?, note? }` — and the page
+rebuilds itself from the array, so adding, removing or rewriting a lesson needs
+no change to the rendering code.
+
+A lesson's optional `file` shows a whole file on the page, collapsed, with a copy
+button and a link to its raw URL: `{ name, path, description }`. `path` must be a
+file in `public/` that `src/index.js` also serves, so the bytes on the page and
+the bytes at the URL are the same read. That's how the skill lesson works — the
+user can copy it, curl it, or point their agent at the URL, and none of those can
+disagree with each other.
 
 `id` is the localStorage key for that lesson's checkmark. Renaming an `id` resets
 whether the user had ticked it; that's fine, just don't be surprised by it.
