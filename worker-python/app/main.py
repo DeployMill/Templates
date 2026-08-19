@@ -1,4 +1,4 @@
-"""{{PROJECT_NAME}} — a deploymill *worker*.
+"""A deploymill *worker*.
 
 THE entrypoint: the Dockerfile runs `python -m app.main` (calls main() below).
 Edit this file (or import into it) to do real work; see AGENTS.md for the
@@ -12,10 +12,18 @@ Replace the heartbeat below with your real recurring work (poll a queue, run a
 periodic sweep, consume a stream, ...).
 """
 
+import os
 import signal
 import sys
 import time
 from datetime import datetime, timezone
+
+
+# The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+# Read here rather than baked into this file at scaffold time so the template
+# is identical for every project — which is what lets deploymill deploy a
+# prebuilt image for the first deploy instead of rebuilding it for each user.
+PROJECT_NAME = os.environ.get("DM_PROJECT_NAME") or "worker"
 
 
 def _now() -> str:
@@ -23,10 +31,10 @@ def _now() -> str:
 
 
 def main() -> None:
-    print(f"[{{PROJECT_NAME}}] worker started at {_now()}", flush=True)
+    print(f"[{PROJECT_NAME}] worker started at {_now()}", flush=True)
 
     def _shutdown(*_args):
-        print(f"[{{PROJECT_NAME}}] received SIGTERM, shutting down", flush=True)
+        print(f"[{PROJECT_NAME}] received SIGTERM, shutting down", flush=True)
         sys.exit(0)
 
     # Exit cleanly when the platform stops the container (deploy/redeploy/stop).
@@ -36,7 +44,7 @@ def main() -> None:
     while True:
         tick += 1
         # TODO: replace this with the actual job.
-        print(f"[{{PROJECT_NAME}}] tick {tick} @ {_now()}", flush=True)
+        print(f"[{PROJECT_NAME}] tick {tick} @ {_now()}", flush=True)
         time.sleep(30)
 
 

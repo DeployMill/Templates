@@ -11,6 +11,12 @@ import { hasDatabase, query, withRetry } from "./db.js";
 // --- Schema + seed -----------------------------------------------------------
 // Single-row profile (id=1) + an ordered list of links. CREATE TABLE IF NOT
 // EXISTS is idempotent — safe to re-run every boot.
+// The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+// Read here rather than baked into this file at scaffold time so the template
+// is identical for every project — which is what lets deploymill deploy a
+// prebuilt image for the first deploy instead of rebuilding it for each user.
+const PROJECT_NAME = process.env.DM_PROJECT_NAME || "Your links";
+
 let dbReady = false;
 
 async function initSchema() {
@@ -108,8 +114,8 @@ async function getProfile() {
 
 // Public page.
 app.get("/", async (c) => {
-  if (!hasDatabase) return c.html(page("light", html`<div class="banner"><strong>No database yet.</strong> Ask your agent to add one (<code>reconcile_project</code>), or wait a moment if you just launched.</div>`, "{{PROJECT_NAME}}"));
-  if (!dbReady) return c.html(page("light", html`<div class="banner">Starting up — refresh in a few seconds.</div>`, "{{PROJECT_NAME}}"));
+  if (!hasDatabase) return c.html(page("light", html`<div class="banner"><strong>No database yet.</strong> Ask your agent to add one (<code>reconcile_project</code>), or wait a moment if you just launched.</div>`, PROJECT_NAME));
+  if (!dbReady) return c.html(page("light", html`<div class="banner">Starting up — refresh in a few seconds.</div>`, PROJECT_NAME));
   const profile = await getProfile();
   const links = (await query(`SELECT * FROM links ORDER BY position, id;`)).rows;
   const body = html`
@@ -118,7 +124,7 @@ app.get("/", async (c) => {
     ${profile.bio ? html`<p class="bio">${profile.bio}</p>` : ""}
     ${raw(links.map((l) => html`<a class="link" href="/l/${l.id}">${l.label}</a>`.toString()).join(""))}
     <div class="topnav"><a href="/admin">Edit this page</a></div>`;
-  return c.html(page(profile.theme, body, profile.display_name || "{{PROJECT_NAME}}"));
+  return c.html(page(profile.theme, body, profile.display_name || PROJECT_NAME));
 });
 
 // Click-through: count + redirect. A browser-side 302 is allowed under locked egress.
@@ -166,7 +172,7 @@ app.get("/admin", async (c) => {
         <div class="row"><input name="label" placeholder="Label" required /><input name="url" placeholder="https://…" required /><button type="submit">+ Add</button></div>
       </form>
     </div>`;
-  return c.html(page(profile.theme, body, "Edit · {{PROJECT_NAME}}"));
+  return c.html(page(profile.theme, body, `Edit · ${PROJECT_NAME}`));
 });
 
 app.post("/admin/profile", async (c) => {

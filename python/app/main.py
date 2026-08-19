@@ -11,18 +11,19 @@ from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
+# The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+# Read here rather than baked into this file at scaffold time so the template
+# is identical for every project — which is what lets deploymill deploy a
+# prebuilt image for the first deploy instead of rebuilding it for each user.
+PROJECT_NAME = os.environ.get("DM_PROJECT_NAME") or "Your app"
 
-# Starter landing page. It's one self-contained block so you can replace the
-# whole thing in one edit when you build the real app — keep (or re-add) the
-# badge markers below if this org is on the free tier.
-@app.get("/", response_class=HTMLResponse)
-def root() -> str:
-    return """<!doctype html>
+
+_PAGE = """<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{PROJECT_NAME}}</title>
+  <title>__PROJECT_NAME__</title>
   <style>
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
@@ -41,13 +42,21 @@ def root() -> str:
 <body>
   <main class="card">
     <div class="spark">🚀</div>
-    <h1>{{PROJECT_NAME}}</h1>
+    <h1>__PROJECT_NAME__</h1>
     <p>It's live. This FastAPI starter was scaffolded by deploymill and is ready to become your app.</p>
     <p class="hint">Edit <code>app/main.py</code> to replace this page — see <code>AGENTS.md</code> for the build &amp; deploy contract.</p>
   </main>
   <!--deploymill:badge--><a href="https://deploymill.com?utm_source=deploymill-badge&utm_medium=app" target="_blank" rel="noopener" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#e6edf6;background:rgba(11,18,32,.88);border:1px solid rgba(255,255,255,.14);border-radius:9px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.28)">⚡ Built on deploymill</a><!--/deploymill:badge-->
 </body>
 </html>"""
+
+
+# Starter landing page. It's one self-contained block so you can replace the
+# whole thing in one edit when you build the real app — keep (or re-add) the
+# badge markers below if this org is on the free tier.
+@app.get("/", response_class=HTMLResponse)
+def root() -> str:
+    return _PAGE.replace("__PROJECT_NAME__", PROJECT_NAME)
 
 
 # Health endpoint — deploymill's canonical "is this deploy good?" signal.

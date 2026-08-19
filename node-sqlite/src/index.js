@@ -17,6 +17,12 @@ db.exec(`
 `);
 db.exec(`INSERT OR IGNORE INTO visits (id, count) VALUES (1, 0);`);
 
+// The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+// Read here rather than baked into this file at scaffold time so the template
+// is identical for every project — which is what lets deploymill deploy a
+// prebuilt image for the first deploy instead of rebuilding it for each user.
+const PROJECT_NAME = process.env.DM_PROJECT_NAME || "Your app";
+
 const bump = db.prepare(`UPDATE visits SET count = count + 1 WHERE id = 1;`);
 const read = db.prepare(`SELECT count FROM visits WHERE id = 1;`);
 
@@ -40,7 +46,7 @@ app.get("/", (c) => {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{PROJECT_NAME}}</title>
+  <title>${PROJECT_NAME}</title>
   <style>
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
@@ -61,7 +67,7 @@ app.get("/", (c) => {
 <body>
   <main class="card">
     <div class="spark">🚀</div>
-    <h1>{{PROJECT_NAME}}</h1>
+    <h1>${PROJECT_NAME}</h1>
     <div class="count">${count}<span>page views</span></div>
     <p>${mode}</p>
     <p class="hint">node:sqlite on Node 24. Edit <code>src/index.js</code> to build your app — see <code>AGENTS.md</code>.</p>

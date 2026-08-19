@@ -144,8 +144,9 @@ lives in the per-directory manifest (one source of truth per template).
 ## Adding a template
 
 1. Add a directory with the scaffold files. It **must** contain a `Dockerfile`
-   (`buildType` is `dockerfile`). Use `{{PROJECT_NAME}}` anywhere the new
-   project's name should be substituted in.
+   (`buildType` is `dockerfile`). To show the project's name, read the
+   `DM_PROJECT_NAME` environment variable that DeployMill injects at run time —
+   **not** the `{{PROJECT_NAME}}` scaffold-time placeholder (see below).
 2. Add a `deploymill.json` to the directory (see the schema above). Set `kind`
    and `runtime` explicitly — don't lean on the inference fallbacks.
 3. Add an **`AGENTS.md`** to the directory — the agent-facing build/run/layout
@@ -154,6 +155,35 @@ lives in the per-directory manifest (one source of truth per template).
    Exclude it from the build in `.dockerignore` (it matters for `static`, whose
    Dockerfile `COPY . `s the whole root; harmless elsewhere).
 4. List the directory in the root `deploymill.json`.
+
+### Don't bake the project's name into a template
+
+`{{PROJECT_NAME}}` is substituted at **scaffold** time, so a template that uses
+it renders differently for every project — and a template that renders
+differently for every project has to be rebuilt for every project.
+
+DeployMill builds each template **once**, centrally, and deploys that image for
+the first deploy of any repo that is still the untouched scaffold. That only
+works while the template's files are identical for everyone, so a template
+should read `DM_PROJECT_NAME` at run time instead:
+
+```js
+const PROJECT_NAME = process.env.DM_PROJECT_NAME || "Your app";
+```
+
+```python
+PROJECT_NAME = os.environ.get("DM_PROJECT_NAME") or "Your app"
+```
+
+Nothing breaks if you use `{{PROJECT_NAME}}` anyway — the template simply falls
+back to being built per project, exactly as before. The eligibility check is
+mechanical (DeployMill renders the template under two different project names and
+compares the bytes), so there is no list to keep in sync.
+
+The other thing that makes a template ineligible is a Dockerfile that copies the
+**whole build context** (`COPY . …`, as `static` does). Such an image would also
+bake in the per-repo files DeployMill and GitHub add — `.deploymill/project.json`,
+the auto-init README — which differ per project. Copy named paths where you can.
 
 Keep a **`runtime`** starter minimal — its goal is "first deploy green," not a
 feature-rich app, and it's going to be replaced anyway. An **`app`** starter is

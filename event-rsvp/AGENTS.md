@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — Event + RSVP (how it builds, runs, and gets remixed)
+# Event + RSVP — how it builds, runs, and gets remixed
 
 > **Agent: read this before adding or moving files.** The `Dockerfile` decides
 > what ships and what runs. Put code where it copies it, or change it to match.
@@ -73,7 +73,7 @@ outbound calls, no email. Only deps: `hono`, `@hono/node-server`, `pg`. Listen o
 ## File map
 
 ```
-{{PROJECT_NAME}}/
+your-app/
 ├── Dockerfile          # build + run contract
 ├── package.json        # deps: hono, @hono/node-server, pg
 ├── src/

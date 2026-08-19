@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — how this template builds and runs
+# How this template builds and runs
 
 > **Agent: read this before adding or moving files.** The `Dockerfile` — not
 > convention — decides what ships and what runs.
@@ -36,7 +36,7 @@ under `app/`; if you move the entrypoint, update the `CMD`.
 ## File map
 
 ```
-{{PROJECT_NAME}}/
+your-app/
 ├── Dockerfile          # build + run contract
 ├── pyproject.toml      # dependencies (empty to start)
 ├── app/

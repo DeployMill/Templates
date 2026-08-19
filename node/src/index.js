@@ -8,6 +8,12 @@ import { timingSafeEqual } from "node:crypto";
 
 const app = new Hono();
 
+// The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+// Read here rather than baked into this file at scaffold time so the template
+// is identical for every project — which is what lets deploymill deploy a
+// prebuilt image for the first deploy instead of rebuilding it for each user.
+const PROJECT_NAME = process.env.DM_PROJECT_NAME || "Your app";
+
 // --- Scheduled-jobs receiver -------------------------------------------------
 // POST /_system/tick is where deploymill delivers scheduled "ticks". When your
 // app declares schedules in .deploymill/project.json (e.g.
@@ -56,7 +62,7 @@ app.get("/", (c) =>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{PROJECT_NAME}}</title>
+  <title>${PROJECT_NAME}</title>
   <style>
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
@@ -75,7 +81,7 @@ app.get("/", (c) =>
 <body>
   <main class="card">
     <div class="spark">🚀</div>
-    <h1>{{PROJECT_NAME}}</h1>
+    <h1>${PROJECT_NAME}</h1>
     <p>It's live. This Hono-on-Node starter was scaffolded by deploymill and is ready to become your app.</p>
     <p class="hint">Edit <code>src/index.js</code> to replace this page — see <code>AGENTS.md</code> for the build &amp; deploy contract.</p>
   </main>

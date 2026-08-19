@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — Auth starter (how it builds, runs, and gets extended)
+# Auth starter — how it builds, runs, and gets extended
 
 > **Agent: read this before adding or moving files.** The `Dockerfile` decides
 > what ships and what runs. Put code where it copies it, or change it to match.
@@ -107,7 +107,7 @@ Listen on `0.0.0.0:$PORT`; keep `/healthz` fast and 200.
 ## File map
 
 ```
-{{PROJECT_NAME}}/
+your-app/
 ├── Dockerfile          # build + run contract
 ├── package.json        # deps: hono, @hono/node-server, better-auth, pg
 ├── src/

@@ -43,7 +43,11 @@ async function initAuthSchema() {
 }
 
 // --- Views -------------------------------------------------------------------
-const APP_TITLE = "{{PROJECT_NAME}}";
+// The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+// Read here rather than baked into this file at scaffold time so the template
+// is identical for every project — which is what lets deploymill deploy a
+// prebuilt image for the first deploy instead of rebuilding it for each user.
+const APP_TITLE = process.env.DM_PROJECT_NAME || "Your app";
 
 function layout(title, body) {
   return html`<!doctype html>

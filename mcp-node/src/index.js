@@ -1,4 +1,4 @@
-// {{PROJECT_NAME}} — a deploymill MCP server.
+// A deploymill MCP server.
 //
 // THE entrypoint: the Dockerfile runs `node src/index.js`. Edit this file (or
 // import into it) to change the server; see AGENTS.md for the build/run contract.
@@ -20,6 +20,12 @@ import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
 const port = Number(process.env.PORT) || 3000;
+
+// The project's name, supplied by deploymill at run time (DM_PROJECT_NAME).
+// Read here rather than baked into this file at scaffold time so the template
+// is identical for every project — which is what lets deploymill deploy a
+// prebuilt image for the first deploy instead of rebuilding it for each user.
+const PROJECT_NAME = process.env.DM_PROJECT_NAME || "mcp-server";
 
 // ---------------------------------------------------------------------------
 // Scheduled-jobs receiver.
@@ -85,7 +91,7 @@ async function handleTick(req, res) {
 // ---------------------------------------------------------------------------
 
 function buildMcpServer() {
-  const mcp = new McpServer({ name: "{{PROJECT_NAME}}", version: "0.1.0" });
+  const mcp = new McpServer({ name: PROJECT_NAME, version: "0.1.0" });
 
   // Example tool — replace or extend with your own.
   mcp.tool(
@@ -138,10 +144,10 @@ const httpServer = createServer(async (req, res) => {
 });
 
 httpServer.listen(port, () =>
-  console.log(`[{{PROJECT_NAME}}] MCP server listening on :${port} — endpoint: /mcp`)
+  console.log(`[${PROJECT_NAME}] MCP server listening on :${port} — endpoint: /mcp`)
 );
 
 process.on("SIGTERM", () => {
-  console.log("[{{PROJECT_NAME}}] received SIGTERM, shutting down");
+  console.log(`[${PROJECT_NAME}] received SIGTERM, shutting down`);
   httpServer.close(() => process.exit(0));
 });
