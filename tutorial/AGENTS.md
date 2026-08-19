@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — the DeployMill tutorial app (how it builds, runs, and gets remixed)
+# The DeployMill tutorial app — how it builds, runs, and gets remixed
 
 > **Agent: read this before adding or moving files.** The `Dockerfile` decides
 > what ships and what runs. Put code where it copies it, or change it to match.

@@ -77,6 +77,33 @@ carry a one-line pointer back to `AGENTS.md` at the exact spot an agent edits.
 `AGENTS.md` is documentation for the *scaffolded app*, distinct from this repo's
 own `README.md`/`DECISIONS.md` (which document the templates repo itself).
 
+## Why templates read `DM_PROJECT_NAME` instead of substituting it
+
+`{{PROJECT_NAME}}` is substituted when a repo is scaffolded, which means a
+template that uses it produces different bytes for every project. Different bytes
+mean a different image, and a different image means every single signup pays for
+its own container build of the same starter — from an empty layer cache, through
+one shared builder.
+
+DeployMill now builds each template **once**, centrally, and deploys that image
+for the first deploy of any repo that is still the untouched scaffold. The first
+push by the user's agent takes the normal build path, so nothing about editing
+your app changes. But the shortcut only exists while the template's rendered
+files are identical for every project — so anywhere a starter wants to show the
+project's name, it reads the `DM_PROJECT_NAME` environment variable DeployMill
+injects at run time.
+
+Rolled out to `tutorial` first, since that is the app every new workspace gets
+and therefore the build we pay for on every single signup. The rest of the
+starters still substitute and still build per project; converting them is the
+same two-line change per template whenever we want the same win there.
+
+The placeholder mechanism stays, for `static` (no runtime to read an env var
+from) and for bring-your-own org templates. A template that uses it isn't broken,
+it just gets built per project like before. Eligibility is decided mechanically —
+DeployMill renders the template under two different project names and compares
+the bytes — so there is no allowlist here to keep in sync with reality.
+
 ## `schemaVersion` must stay additive
 
 The server validates manifests against `schemaVersion: 1`. A server that sees a
